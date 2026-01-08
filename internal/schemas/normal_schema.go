@@ -29,13 +29,13 @@ type NormalLanguage struct {
 type NormalEducation struct {
 	Institution string   `yaml:"institution" json:"institution"`
 	Degree      string   `yaml:"degree" json:"degree"`
-	Period      string   `yaml:"period" json:"period"`
+	Dates       string   `yaml:"period" json:"period"`
 	Details     []string `yaml:"details" json:"details"`
 }
 
 type NormalExperience struct {
 	Role             string   `yaml:"role" json:"role"`
 	Company          string   `yaml:"company" json:"company"`
-	Period           string   `yaml:"period" json:"period"`
+	Dates            string   `yaml:"period" json:"period"`
 	Responsibilities []string `yaml:"responsibilities" json:"responsibilities"`
 }
