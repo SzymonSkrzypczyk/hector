@@ -22,5 +22,7 @@ func ParseNormal(filePath string) schemas.Normal {
 		log.Fatal(err)
 	}
 
+	log.Println("Unmarshaled Normal Schema")
+
 	return normalSchema
 }

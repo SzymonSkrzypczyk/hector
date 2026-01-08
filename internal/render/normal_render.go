@@ -69,5 +69,7 @@ func NormalRender(values schemas.Normal) string {
 		}
 	}
 
+	log.Println("HTML resume generated at:", filepath.Join(outputDirectory, outputFile))
+
 	return outputFile
 }
