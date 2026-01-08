@@ -1,0 +1,71 @@
+candidate_info:
+  name: "[Candidate Name]"
+  about: |
+    Third-year student of Data Engineering and Analysis. Motivated and detail-oriented, eager to deepen knowledge in backend systems, distributed architectures, and scalable web services. 
+
+contact:
+  email: "[Email Address]"
+  phone: "[Phone Number]"
+
+skills:
+  - Python (Expert)
+  - JavaScript (Expert)
+  - Docker (Expert) 
+  - Linux Expertise (Expert) 
+  - Git (Expert) 
+  - SQL (Proficient) 
+  - C/C++ (Proficient) 
+  - Kubernetes (Proficient) 
+  - React (Proficient) 
+  - Bash (Proficient) 
+  - Java (Proficient) 
+  - GoLang (Proficient) 
+  - Terraform (Novice) 
+  - Ansible (Novice) 
+
+languages:
+  - language: German
+    level: C1 
+  - language: English
+    level: B2 
+  - language: Spanish
+    level: A2 
+
+education:
+  - institution: "[University Name]" 
+    degree: "Engineering and Data Analysis - Bachelor" 
+    period: "October 2022 - Onwards" 
+    details:
+      - "Strong emphasis on data engineering and data processing" 
+      - "Participation in a number of conferences" 
+      - "Member of [Student Organization]" 
+
+experience:
+  - role: "Software Engineer Intern"
+    company: "[Software Company]"
+    period: "January 2025 - Onwards"
+    responsibilities:
+      - "Maintaining existing tools"
+      - "Participating in Agile team" 
+      - "Presenting demos of product in front of customers"
+
+  - role: "Support Engineer" 
+    company: "[Software Company]" 
+    period: "March 2024 - December 2024" 
+    responsibilities:
+      - "Developing data aggregation tools for support team" 
+      - "Developing API applications for existing tools" 
+      - "Participating in Agile team" 
+
+certifications:
+  - "FCE (June 2021)" 
+  - "IT ESSENTIALS (February 2021)" 
+  - "CCNAv7 (June 2021)" 
+  - "PCAP (June 2020)" 
+  - "[Language Certificate] C1 (July 2024)" 
+
+extra_activities:
+  - "Active member of [Student Organization] for the last 2 years" 
+  - "Sub-coordinator for a number of [Student Organization] events" 
+  - "Charity helper at a children's common room at school" 
+  - "Participation in a number of Hackathons" 
