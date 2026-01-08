@@ -49,10 +49,11 @@ func GenerateNormalPDF(htmlPath string) {
 		PrintBackground: true,
 		PaperWidth:      floatPtr(8.27), // A4
 		PaperHeight:     floatPtr(11.7), // A4
-		MarginTop:       floatPtr(0.4),
-		MarginBottom:    floatPtr(0.4),
-		MarginLeft:      floatPtr(0.4),
-		MarginRight:     floatPtr(0.4),
+		MarginTop:       floatPtr(0.0),
+		MarginBottom:    floatPtr(0.0),
+		MarginLeft:      floatPtr(0.0),
+		MarginRight:     floatPtr(0.0),
+		Scale:           floatPtr(0.9),
 	})
 	if err != nil {
 		log.Fatalln("Failed to generate PDF command:", err)
