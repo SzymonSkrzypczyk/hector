@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"hector/internal/pipeline"
 )
 
 var (
@@ -16,9 +15,7 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generate a CV from a data file",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println("Data:", dataFile)
-		fmt.Println("Theme:", theme)
-		fmt.Println("Output:", outputDir)
+		pipeline.Pipeline(theme, dataFile, outputDir)
 
 		return nil
 	},
