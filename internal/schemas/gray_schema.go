@@ -29,7 +29,7 @@ func (Gray) PDFDetails() PDFSchema {
 		MarginBottom: 0.0,
 		MarginLeft:   0.0,
 		MarginRight:  0.0,
-		Scale:        0.95,
+		Scale:        0.805,
 	}
 }
 
