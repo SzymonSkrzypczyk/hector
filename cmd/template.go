@@ -1,7 +1,12 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
 )
 
 var (
@@ -9,11 +14,46 @@ var (
 	targetFile    string
 )
 
+func renderTemplate(theme string, outputFile string) error {
+	if theme == "" {
+		return fmt.Errorf("theme must be specified")
+	}
+
+	templatePath := filepath.Join("themes", theme, "template.yaml")
+
+	src, err := os.Open(templatePath)
+	if err != nil {
+		return fmt.Errorf("failed to open template %q: %w", templatePath, err)
+	}
+	defer src.Close()
+
+	var dst io.Writer
+	if outputFile == "" {
+		dst = os.Stdout
+	} else {
+		file, err := os.Create(outputFile)
+		if err != nil {
+			return fmt.Errorf("failed to create output file %q: %w", outputFile, err)
+		}
+		defer file.Close()
+		dst = file
+	}
+
+	if _, err := io.Copy(dst, src); err != nil {
+		return fmt.Errorf("failed to copy template: %w", err)
+	}
+
+	return nil
+}
+
 var templateCmd = &cobra.Command{
 	Use:   "template",
 	Short: "Render yaml template for a given theme",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
+		err := renderTemplate(selectedTheme, targetFile)
+		if err != nil {
+			log.Fatalf("failed to render template: %v", err)
+		}
 		return nil
 	},
 }
@@ -35,9 +75,5 @@ func init() {
 		"File to output the template to",
 	)
 
-	// 👇 make --theme required
-	err := templateCmd.MarkFlagRequired("theme")
-	if err != nil {
-		return
-	}
+	rootCmd.AddCommand(templateCmd)
 }
