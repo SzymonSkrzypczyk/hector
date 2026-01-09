@@ -7,22 +7,20 @@ import (
 	"os"
 )
 
-func ParseNormal(filePath string) schemas.Normal {
+func Parse(filePath string, schema schemas.ThemeSchema) schemas.ThemeSchema {
 	f, err := os.ReadFile(filePath)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var normalSchema schemas.Normal
-
-	err = yaml.Unmarshal(f, &normalSchema)
+	err = yaml.Unmarshal(f, schema)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("Unmarshaled Normal Schema")
+	log.Printf("Unmarshaled %v schema\n", schema.ThemeName())
 
-	return normalSchema
+	return schema
 }

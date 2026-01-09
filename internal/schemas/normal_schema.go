@@ -11,6 +11,28 @@ type Normal struct {
 	ExtraActivities []string            `yaml:"extra_activities" json:"extra_activities"`
 }
 
+func (Normal) ThemeName() string {
+	return "normal"
+}
+
+func (Normal) TemplateDetails() FileSchema {
+	return FileSchema{
+		ThemeDirectory: "normal",
+		HTMLTemplate:   "template.html",
+		CSSFile:        "style.css",
+	}
+}
+
+func (Normal) PDFDetails() PDFSchema {
+	return PDFSchema{
+		MarginTop:    0.0,
+		MarginBottom: 0.0,
+		MarginLeft:   0.0,
+		MarginRight:  0.0,
+		Scale:        0.9,
+	}
+}
+
 type NormalCandidateInfo struct {
 	Name  string `yaml:"name" json:"name"`
 	About string `yaml:"about" json:"about"`
