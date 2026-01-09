@@ -10,13 +10,16 @@ import (
 // it will be hardcoded for now to use normal schema
 // ultimately it will be passed by CLI arg
 const (
-	hardcodedExamplePath = "examples/example.yaml"
-	exampleSelectedTheme = "normal"
+	defaultOutputDirectory = "output/"
 )
 
-func Pipeline() {
-	selectedTheme := theme.SelectTheme(exampleSelectedTheme)
-	exampleStruct := parser.Parse(hardcodedExamplePath, selectedTheme)
+func Pipeline(selectedThemeName, valuesPath, outputPath string) {
+	selectedTheme := theme.SelectTheme(selectedThemeName)
+	exampleStruct := parser.Parse(valuesPath, selectedTheme)
 	rendered := render.Render(exampleStruct)
-	pdf.GeneratePDF(rendered, exampleStruct.PDFDetails())
+	if outputPath != "" {
+		pdf.GeneratePDF(rendered, exampleStruct.PDFDetails(), outputPath)
+	} else {
+		pdf.GeneratePDF(rendered, exampleStruct.PDFDetails(), defaultOutputDirectory)
+	}
 }

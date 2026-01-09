@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	pipeline.Pipeline()
+	pipeline.Pipeline("normal", "examples/example.yaml", "")
 }
