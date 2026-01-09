@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .CandidateInfo.Name }} - CV</title>
+    <link rel="stylesheet" href="cv.css">
+</head>
+<body>
+
+<div class="page">
+    <main class="main-column">
+
+        <header class="header">
+            <h1>{{ .CandidateInfo.Name }}</h1>
+            <h2>{{ .CandidateInfo.Title }}</h2>
+        </header>
+
+        <section class="section">
+            <h3 class="section-title">WORK EXPERIENCE</h3> {{ range .Experience }}
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-role">{{ .Role }}</span>
+                    <span class="entry-date">{{ .Dates }}</span>
+                </div>
+                <div class="entry-company">{{ .Company }}</div>
+                <ul class="entry-details">
+                    {{ range .Responsibilities }}
+                    <li>{{ . }}</li>
+                    {{ end }}
+                </ul>
+            </div>
+            {{ end }}
+        </section>
+
+        <section class="section">
+            <h3 class="section-title">EDUCATION</h3> {{ range .Education }}
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-role">{{ .Institution }}</span>
+                    <span class="entry-date">{{ .Dates }}</span>
+                </div>
+                <div class="entry-company">{{ .Degree }}</div>
+                <ul class="entry-details">
+                    {{ range .Details }}
+                    <li>{{ . }}</li>
+                    {{ end }}
+                </ul>
+            </div>
+            {{ end }}
+        </section>
+    </main>
+
+    <aside class="sidebar">
+        <div class="profile-photo"></div>
+
+        <div class="sidebar-section">
+            <h3>ABOUT ME</h3> <p class="about-text">
+            {{ .CandidateInfo.About }}
+        </p>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>CONTACT</h3> <div class="contact-info">
+            {{ if .Contact.Phone }}
+            <div class="contact-item">
+                <strong>Phone:</strong> {{ .Contact.Phone }}
+            </div>
+            {{ end }}
+            {{ if .Contact.Email }}
+            <div class="contact-item">
+                <strong>Email:</strong> {{ .Contact.Email }}
+            </div>
+            {{ end }}
+            {{ if .Contact.Address }}
+            <div class="contact-item">
+                <strong>Address:</strong> {{ .Contact.Address }}
+            </div>
+            {{ end }}
+        </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>ACHIEVEMENTS</h3> <ul class="sidebar-list">
+            {{ range .Certifications }}
+            <li>{{ . }}</li>
+            {{ end }}
+        </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>SKILLS</h3> <ul class="sidebar-list">
+            {{ range .Skills }}
+            <li>{{ . }}</li>
+            {{ end }}
+        </ul>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>ACTIVITIES</h3>
+            <ul class="sidebar-list">
+                {{ range .ExtraActivities }}
+                <li>{{ . }}</li>
+                {{ end }}
+            </ul>
+        </div>
+
+    </aside>
+</div>
+
+</body>
+</html>
