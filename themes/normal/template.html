@@ -11,6 +11,9 @@
 <div class="page">
     <aside class="sidebar">
         <div class="profile-photo">
+            {{ if .Photo }}
+            <img src="{{ .Photo }}" alt="Profile Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            {{ end }}
         </div>
 
         <div class="sidebar-section">
