@@ -10,16 +10,17 @@ import (
 )
 
 const (
-	themePath       = "themes/normal"
+	themePath       = "themes"
 	outputDirectory = "output/"
 	outputFile      = "normal_resume.html"
-	templateFile    = "template.html"
-	styleFile       = "style.css"
 )
 
-func NormalRender(values schemas.Normal) string {
-	htmlFile := filepath.Join(themePath, templateFile)
-	cssFile := filepath.Join(themePath, styleFile)
+func Render(values schemas.ThemeSchema) string {
+	details := ExtractFiles(values)
+	templateDirectory := filepath.Join(themePath, details.ThemeDirectory)
+
+	htmlFile := filepath.Join(templateDirectory, details.HTMLTemplate)
+	cssFile := filepath.Join(templateDirectory, details.CSSFile)
 
 	dir, err := os.ReadDir(outputDirectory)
 	if err != nil || dir == nil {
@@ -53,7 +54,7 @@ func NormalRender(values schemas.Normal) string {
 		log.Printf("warning: could not open theme style.css (%s): %v", cssFile, err)
 	} else {
 		defer src.Close()
-		dstPath := filepath.Join(outputDirectory, styleFile)
+		dstPath := filepath.Join(outputDirectory, details.CSSFile)
 		dst, err := os.Create(dstPath)
 		if err != nil {
 			log.Fatalln(err)

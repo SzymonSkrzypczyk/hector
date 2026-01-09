@@ -2,6 +2,7 @@ package pdf
 
 import (
 	"fmt"
+	"hector/internal/schemas"
 	"io"
 	"log"
 	"os"
@@ -14,7 +15,23 @@ import (
 
 const outputDirectory = "output/"
 
-func GenerateNormalPDF(htmlPath string) {
+func clearOutputDirectory() {
+	files, err := os.ReadDir(outputDirectory)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for _, file := range files {
+		if filepath.Ext(file.Name()) != ".pdf" {
+			err := os.Remove(filepath.Join(outputDirectory, file.Name()))
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+	}
+}
+
+func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema) {
 	if err := os.MkdirAll(outputDirectory, 0755); err != nil {
 		log.Fatalln(err)
 	}
@@ -49,11 +66,11 @@ func GenerateNormalPDF(htmlPath string) {
 		PrintBackground: true,
 		PaperWidth:      floatPtr(8.27), // A4
 		PaperHeight:     floatPtr(11.7), // A4
-		MarginTop:       floatPtr(0.0),
-		MarginBottom:    floatPtr(0.0),
-		MarginLeft:      floatPtr(0.0),
-		MarginRight:     floatPtr(0.0),
-		Scale:           floatPtr(0.9),
+		MarginTop:       floatPtr(styleGuide.MarginTop),
+		MarginBottom:    floatPtr(styleGuide.MarginBottom),
+		MarginLeft:      floatPtr(styleGuide.MarginLeft),
+		MarginRight:     floatPtr(styleGuide.MarginRight),
+		Scale:           floatPtr(styleGuide.Scale),
 	})
 	if err != nil {
 		log.Fatalln("Failed to generate PDF command:", err)
@@ -68,6 +85,7 @@ func GenerateNormalPDF(htmlPath string) {
 		log.Fatalln("Failed to save PDF file:", err)
 	}
 
+	clearOutputDirectory()
 	fmt.Println("Success! PDF generated at:", targetFile)
 }
 
