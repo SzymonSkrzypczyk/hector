@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"hector/internal/schemas"
 	"html/template"
 	"io"
@@ -16,11 +17,14 @@ const (
 )
 
 func Render(values schemas.ThemeSchema) string {
-	details := ExtractFiles(values)
+	details := values.TemplateDetails()
 	templateDirectory := filepath.Join(themePath, details.ThemeDirectory)
+	fmt.Println(templateDirectory)
 
 	htmlFile := filepath.Join(templateDirectory, details.HTMLTemplate)
 	cssFile := filepath.Join(templateDirectory, details.CSSFile)
+
+	fmt.Println("test 1")
 
 	dir, err := os.ReadDir(outputDirectory)
 	if err != nil || dir == nil {
@@ -29,6 +33,8 @@ func Render(values schemas.ThemeSchema) string {
 			log.Fatalln(err)
 		}
 	}
+
+	fmt.Println("test 2")
 
 	hf, err := os.Create(filepath.Join(outputDirectory, outputFile))
 	if err != nil {
@@ -40,10 +46,14 @@ func Render(values schemas.ThemeSchema) string {
 		}
 	}()
 
+	fmt.Println("test 3")
+
 	tmpl, err := template.ParseFiles(htmlFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	fmt.Println("test 4")
 
 	if err := tmpl.Execute(hf, values); err != nil {
 		log.Fatalln(err)

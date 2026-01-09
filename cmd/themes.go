@@ -31,8 +31,8 @@ var themesCmd = &cobra.Command{
 			cmd.PrintErrln("Error:", err)
 		}
 		cmd.Println("Available themes:")
-		for ind, theme := range themes {
-			cmd.Printf("Theme %d: %s\n", ind+1, theme)
+		for _, theme := range themes {
+			cmd.Printf("\t- %s\n", theme)
 		}
 	},
 }
