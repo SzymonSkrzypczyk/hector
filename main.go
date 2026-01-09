@@ -1,9 +1,7 @@
 package main
 
-import (
-	"hector/internal/pipeline"
-)
+import "hector/cmd"
 
 func main() {
-	pipeline.Pipeline("normal", "examples/example.yaml", "")
+	cmd.Execute()
 }
