@@ -13,9 +13,7 @@ import (
 	"github.com/go-rod/rod/lib/proto"
 )
 
-const outputDirectory = "output/"
-
-func clearOutputDirectory() {
+func clearOutputDirectory(outputDirectory string) {
 	files, err := os.ReadDir(outputDirectory)
 	if err != nil {
 		log.Fatalln(err)
@@ -31,7 +29,7 @@ func clearOutputDirectory() {
 	}
 }
 
-func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema) {
+func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory string) {
 	if err := os.MkdirAll(outputDirectory, 0755); err != nil {
 		log.Fatalln(err)
 	}
@@ -85,7 +83,7 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema) {
 		log.Fatalln("Failed to save PDF file:", err)
 	}
 
-	clearOutputDirectory()
+	clearOutputDirectory(outputDirectory)
 	fmt.Println("Success! PDF generated at:", targetFile)
 }
 
