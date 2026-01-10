@@ -1,0 +1,35 @@
+candidate_info:
+  name:
+  title:
+  about:
+contact:
+  email:
+  phone:
+  address:
+
+skills:
+# list
+
+languages:
+  - language:
+    level:
+
+education:
+  - institution:
+    degree:
+    dates:
+    details:
+    # list
+
+experience:
+  - role:
+    company:
+    dates:
+    responsibilities:
+    # list
+
+certifications:
+# list
+
+extra_activities:
+# list
