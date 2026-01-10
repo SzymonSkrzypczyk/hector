@@ -8,13 +8,61 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 )
 
 const (
 	themePath       = "themes"
 	outputDirectory = "output/"
 	outputFile      = "normal_resume.html"
+	copiedPhotoName = "photo.jpg"
 )
+
+func copyAsset(srcPath, outputDir string) error {
+	absSrc, err := filepath.Abs(srcPath)
+	if err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(absSrc); err != nil {
+		return fmt.Errorf("asset not found: %s", absSrc)
+	}
+
+	dst := filepath.Join(outputDir, copiedPhotoName)
+
+	in, err := os.Open(absSrc)
+	if err != nil {
+		return fmt.Errorf("asset not found: %s", absSrc)
+	}
+	defer in.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return fmt.Errorf("failed to create destination file %s: %v", dst, err)
+	}
+	defer out.Close()
+
+	if _, err := io.Copy(out, in); err != nil {
+		return fmt.Errorf("failed to copy asset from %s to %s: %v", absSrc, dst, err)
+	}
+
+	return nil
+}
+
+func GetPhotoFromTheme(exampleStruct schemas.ThemeSchema) string {
+	val := reflect.ValueOf(exampleStruct)
+
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	field := val.FieldByName("Photo")
+	if field.IsValid() && field.Kind() == reflect.String {
+		return field.String()
+	}
+
+	return ""
+}
 
 func Render(values schemas.ThemeSchema) string {
 	details := values.TemplateDetails()
@@ -42,6 +90,7 @@ func Render(values schemas.ThemeSchema) string {
 		}
 	}()
 
+	// parse HTML template
 	tmpl, err := template.ParseFiles(htmlFile)
 	if err != nil {
 		log.Fatalf("Failed to parse HTML template: %s", err)
@@ -51,6 +100,7 @@ func Render(values schemas.ThemeSchema) string {
 		log.Fatalf("Failed to render HTML template: %s", err)
 	}
 
+	// copy css file
 	src, err := os.Open(cssFile)
 	if err != nil {
 		log.Fatalf("warning: could not open theme style.css (%s): %v", cssFile, err)
@@ -69,6 +119,14 @@ func Render(values schemas.ThemeSchema) string {
 			if _, err := io.Copy(dst, src); err != nil {
 				log.Fatalf("warning: could not copy css file (%s): %v", dstPath, err)
 			}
+		}
+	}
+
+	// copy photo if exists
+	if photoPath := GetPhotoFromTheme(values); photoPath != "" {
+		err := copyAsset(photoPath, outputDirectory)
+		if err != nil {
+			log.Printf("warning: could not copy photo asset (%s): %v", photoPath, err)
 		}
 	}
 

@@ -1,12 +1,10 @@
 package schemas
 
-import "html/template"
-
 type Normal struct {
 	CandidateInfo   NormalCandidateInfo `yaml:"candidate_info" json:"candidate_info"`
 	Contact         NormalContact       `yaml:"contact" json:"contact"`
 	Skills          []string            `yaml:"skills" json:"skills"`
-	Photo           template.URL        `yaml:"photo" json:"photo"`
+	Photo           string              `yaml:"photo,omitempty" json:"photo,omitempty"`
 	Languages       []NormalLanguage    `yaml:"languages" json:"languages"`
 	Education       []NormalEducation   `yaml:"education" json:"education"`
 	Experience      []NormalExperience  `yaml:"experience" json:"experience"`
