@@ -12,6 +12,7 @@ import (
 var (
 	selectedThemePreview string
 	valuesPathPreview    string
+	noOpen               bool
 )
 
 func openBrowser(path string) error {
@@ -41,6 +42,9 @@ var previewCmd = &cobra.Command{
 		}
 		htmlPath, _ := pipeline.GenerateHTML(selectedThemePreview, valuesPathPreview)
 		fmt.Printf("Preview generated at %s\n", htmlPath)
+		if noOpen {
+			return
+		}
 		err := openBrowser(htmlPath)
 		if err != nil {
 			fmt.Printf("Failed to open browser: %v\n", err)
@@ -63,6 +67,13 @@ func init() {
 		"d",
 		"",
 		"Path to CV data file (YAML or JSON)",
+	)
+
+	previewCmd.Flags().BoolVar(
+		&noOpen,
+		"no-open",
+		false,
+		"Generate preview without opening browser",
 	)
 
 	rootCmd.AddCommand(previewCmd)
