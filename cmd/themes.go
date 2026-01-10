@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"log"
 	"os"
 )
 
 func ListDirectories(path string) ([]string, error) {
 	entries, err := os.ReadDir(path)
 	if err != nil {
+		log.Fatalf("Error reading directory: %s", err)
 		return nil, err
 	}
 

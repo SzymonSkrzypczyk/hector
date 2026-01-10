@@ -11,13 +11,13 @@ func Parse(filePath string, schema schemas.ThemeSchema) schemas.ThemeSchema {
 	f, err := os.ReadFile(filePath)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error reading file: %s", err)
 	}
 
 	err = yaml.Unmarshal(f, schema)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error parsing YAML: %s", err)
 	}
 
 	log.Printf("Unmarshaled %v schema\n", schema.ThemeName())
