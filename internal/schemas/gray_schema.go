@@ -4,6 +4,7 @@ type Gray struct {
 	CandidateInfo   GrayCandidateInfo `yaml:"candidate_info" json:"candidate_info"`
 	Contact         GrayContact       `yaml:"contact" json:"contact"`
 	Skills          []string          `yaml:"skills" json:"skills"`
+	Photo           string            `yaml:"photo,omitempty" json:"photo,omitempty"`
 	Languages       []GrayLanguage    `yaml:"languages" json:"languages"`
 	Education       []GrayEducation   `yaml:"education" json:"education"`
 	Experience      []GrayExperience  `yaml:"experience" json:"experience"`

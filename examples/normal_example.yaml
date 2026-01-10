@@ -1,3 +1,5 @@
+path: "[path_to_photo.jpg]"
+
 candidate_info:
   name: "[Candidate Name]"
   about: |

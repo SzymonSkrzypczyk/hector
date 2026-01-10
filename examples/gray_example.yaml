@@ -1,3 +1,5 @@
+photo: "[photo_gray.jpg]"
+
 candidate_info:
   name: "[Candidate Name]"
   title: "Data Engineering Student"
