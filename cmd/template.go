@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	selectedTheme string
-	targetFile    string
+	selectedThemeTemplate string
+	targetFile            string
 )
 
 func renderTemplate(theme string, outputFile string) error {
@@ -50,7 +50,7 @@ var templateCmd = &cobra.Command{
 	Use:   "template",
 	Short: "Render yaml template for a given theme",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		err := renderTemplate(selectedTheme, targetFile)
+		err := renderTemplate(selectedThemeTemplate, targetFile)
 		if err != nil {
 			log.Fatalf("failed to render template: %v", err)
 		}
@@ -60,7 +60,7 @@ var templateCmd = &cobra.Command{
 
 func init() {
 	templateCmd.Flags().StringVarP(
-		&selectedTheme,
+		&selectedThemeTemplate,
 		"theme",
 		"t",
 		"normal",
