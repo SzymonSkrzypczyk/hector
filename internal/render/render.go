@@ -28,46 +28,46 @@ func Render(values schemas.ThemeSchema) string {
 	if err != nil || dir == nil {
 		err := os.MkdirAll(outputDirectory, os.ModePerm)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatalf("Failed to create output directory: %s", err)
 		}
 	}
 
 	hf, err := os.Create(filepath.Join(outputDirectory, outputFile))
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Failed to create file: %s", err)
 	}
 	defer func() {
-		if cerr := hf.Close(); cerr != nil {
-			log.Printf("warning: failed to close file %s: %v", filepath.Join(outputDirectory, outputFile), cerr)
+		if err := hf.Close(); err != nil {
+			log.Fatalf("warning: failed to close file %s: %v", filepath.Join(outputDirectory, outputFile), err)
 		}
 	}()
 
 	tmpl, err := template.ParseFiles(htmlFile)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Failed to parse HTML template: %s", err)
 	}
 
 	if err := tmpl.Execute(hf, values); err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Failed to render HTML template: %s", err)
 	}
 
 	src, err := os.Open(cssFile)
 	if err != nil {
-		log.Printf("warning: could not open theme style.css (%s): %v", cssFile, err)
+		log.Fatalf("warning: could not open theme style.css (%s): %v", cssFile, err)
 	} else {
 		defer src.Close()
 		dstPath := filepath.Join(outputDirectory, details.CSSFile)
 		dst, err := os.Create(dstPath)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatalf("warning: could not create destination css file (%s): %v", dstPath, err)
 		} else {
 			defer func() {
 				if err := dst.Close(); err != nil {
-					log.Fatalln(err)
+					log.Fatalf("warning: could not close destination css file (%s): %v", dstPath, err)
 				}
 			}()
 			if _, err := io.Copy(dst, src); err != nil {
-				log.Fatalln(err)
+				log.Fatalf("warning: could not copy css file (%s): %v", dstPath, err)
 			}
 		}
 	}

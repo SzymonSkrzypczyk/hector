@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"hector/internal/pipeline"
+	"log"
 	"os/exec"
 	"runtime"
 
@@ -37,17 +38,16 @@ var previewCmd = &cobra.Command{
 	Short: "Preview your CV in the browser",
 	Run: func(cmd *cobra.Command, args []string) {
 		if valuesPathPreview == "" {
-			fmt.Println("Error: --data flag is required")
-			return
+			log.Fatalln("Error: --data flag is required")
 		}
 		htmlPath, _ := pipeline.GenerateHTML(selectedThemePreview, valuesPathPreview)
-		fmt.Printf("Preview generated at %s\n", htmlPath)
+		log.Printf("Preview generated at %s\n", htmlPath)
 		if noOpen {
 			return
 		}
 		err := openBrowser(htmlPath)
 		if err != nil {
-			fmt.Printf("Failed to open browser: %v\n", err)
+			log.Printf("Failed to open browser: %v\n", err)
 		}
 	},
 }
