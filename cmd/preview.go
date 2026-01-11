@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hector/internal/pipeline"
 	"log"
+	"os"
 	"os/exec"
 	"runtime"
 
@@ -14,6 +15,7 @@ var (
 	selectedThemePreview string
 	valuesPathPreview    string
 	noOpen               bool
+	watchPreview         bool
 )
 
 func openBrowser(path string) error {
@@ -33,6 +35,13 @@ func openBrowser(path string) error {
 	return cmd.Start()
 }
 
+func checkDataChanged(originalChanges, comparedChanges string) bool {
+	if originalChanges != comparedChanges {
+		return true
+	}
+	return false
+}
+
 var previewCmd = &cobra.Command{
 	Use:   "preview",
 	Short: "Preview your CV in the browser",
@@ -48,6 +57,27 @@ var previewCmd = &cobra.Command{
 		err := openBrowser(htmlPath)
 		if err != nil {
 			log.Printf("Failed to open browser: %v\n", err)
+		}
+
+		// variables for comparing file changes
+		previousData, err := os.ReadFile(valuesPathPreview)
+		if err != nil {
+			log.Fatalf("Error reading data file: %v\n", err)
+		}
+
+		if watchPreview {
+			for {
+				currentData, err := os.ReadFile(valuesPathPreview)
+				if err != nil {
+					log.Fatalf("Error reading data file: %v\n", err)
+				}
+
+				if checkDataChanged(string(previousData), string(currentData)) {
+					log.Println("Changes detected, regenerating preview...")
+					_, _ = pipeline.GenerateHTML(selectedThemePreview, valuesPathPreview)
+					previousData = currentData
+				}
+			}
 		}
 	},
 }
@@ -74,6 +104,13 @@ func init() {
 		"no-open",
 		false,
 		"Generate preview without opening browser",
+	)
+
+	previewCmd.Flags().BoolVar(
+		&watchPreview,
+		"watch",
+		false,
+		"Watch for changes and regenerate preview automatically",
 	)
 
 	rootCmd.AddCommand(previewCmd)
