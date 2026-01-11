@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hector/internal/pipeline"
 	"log"
+	"os"
 	"os/exec"
 	"runtime"
 
@@ -34,8 +35,11 @@ func openBrowser(path string) error {
 	return cmd.Start()
 }
 
-func checkChangesData() {
-	// placeholder
+func checkDataChanged(originalChanges, comparedChanges string) bool {
+	if originalChanges != comparedChanges {
+		return true
+	}
+	return false
 }
 
 var previewCmd = &cobra.Command{
@@ -55,9 +59,24 @@ var previewCmd = &cobra.Command{
 			log.Printf("Failed to open browser: %v\n", err)
 		}
 
+		// variables for comparing file changes
+		previousData, err := os.ReadFile(valuesPathPreview)
+		if err != nil {
+			log.Fatalf("Error reading data file: %v\n", err)
+		}
+
 		if watchPreview {
 			for {
-				// watch data file for changes and regenerate preview
+				currentData, err := os.ReadFile(valuesPathPreview)
+				if err != nil {
+					log.Fatalf("Error reading data file: %v\n", err)
+				}
+
+				if checkDataChanged(string(previousData), string(currentData)) {
+					log.Println("Changes detected, regenerating preview...")
+					_, _ = pipeline.GenerateHTML(selectedThemePreview, valuesPathPreview)
+					previousData = currentData
+				}
 			}
 		}
 	},
