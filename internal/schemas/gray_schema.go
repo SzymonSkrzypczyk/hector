@@ -1,8 +1,8 @@
 package schemas
 
 type Gray struct {
-	CandidateInfo   GrayCandidateInfo `yaml:"candidate_info" json:"candidate_info"`
-	Contact         GrayContact       `yaml:"contact" json:"contact"`
+	CandidateInfo   GrayCandidateInfo `yaml:"candidate_info" json:"candidate_info" validate:"required"`
+	Contact         GrayContact       `yaml:"contact" json:"contact" validate:"required"`
 	Skills          []string          `yaml:"skills" json:"skills"`
 	Photo           string            `yaml:"photo,omitempty" json:"photo,omitempty"`
 	Languages       []GrayLanguage    `yaml:"languages" json:"languages"`
@@ -34,14 +34,24 @@ func (Gray) PDFDetails() PDFSchema {
 	}
 }
 
+func (g *Gray) Validate() (bool, []string) {
+	missingFields := ValidateRequiredFields(g)
+
+	if len(missingFields) > 0 {
+		return false, missingFields
+	}
+
+	return true, nil
+}
+
 type GrayCandidateInfo struct {
-	Name  string `yaml:"name" json:"name"`
-	Title string `yaml:"title" json:"title"` // Added Title field
-	About string `yaml:"about" json:"about"`
+	Name  string `yaml:"name" json:"name" validate:"required"`
+	Title string `yaml:"title" json:"title"`
+	About string `yaml:"about" json:"about" validate:"required"`
 }
 
 type GrayContact struct {
-	Email   string `yaml:"email" json:"email"`
+	Email   string `yaml:"email" json:"email" validate:"required"`
 	Phone   string `yaml:"phone" json:"phone"`
 	Address string `yaml:"address" json:"address"` // Added Address field
 }

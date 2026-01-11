@@ -1,8 +1,8 @@
 package schemas
 
 type Normal struct {
-	CandidateInfo   NormalCandidateInfo `yaml:"candidate_info" json:"candidate_info"`
-	Contact         NormalContact       `yaml:"contact" json:"contact"`
+	CandidateInfo   NormalCandidateInfo `yaml:"candidate_info" json:"candidate_info" validate:"required"`
+	Contact         NormalContact       `yaml:"contact" json:"contact" validate:"required"`
 	Skills          []string            `yaml:"skills" json:"skills"`
 	Photo           string              `yaml:"photo,omitempty" json:"photo,omitempty"`
 	Languages       []NormalLanguage    `yaml:"languages" json:"languages"`
@@ -34,13 +34,23 @@ func (Normal) PDFDetails() PDFSchema {
 	}
 }
 
+func (n *Normal) Validate() (bool, []string) {
+	missingFields := ValidateRequiredFields(n)
+
+	if len(missingFields) > 0 {
+		return false, missingFields
+	}
+
+	return true, nil
+}
+
 type NormalCandidateInfo struct {
-	Name  string `yaml:"name" json:"name"`
-	About string `yaml:"about" json:"about"`
+	Name  string `yaml:"name" json:"name" validate:"required"`
+	About string `yaml:"about" json:"about" validate:"required"`
 }
 
 type NormalContact struct {
-	Email string `yaml:"email" json:"email"`
+	Email string `yaml:"email" json:"email" validate:"required"`
 	Phone string `yaml:"phone" json:"phone"`
 }
 
