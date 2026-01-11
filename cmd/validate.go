@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"hector/internal/parser"
+	valtheme "hector/internal/theme"
 	"log"
 )
 
@@ -24,6 +26,19 @@ var validateCmd = &cobra.Command{
 			validationTemplate = defaultTemplateValidation
 		}
 
+		selectedTheme := valtheme.SelectTheme(validationTemplate)
+		exampleStruct := parser.Parse(validationDataFile, selectedTheme)
+		isCorrect, missing := exampleStruct.Validate()
+
+		if isCorrect {
+			log.Println("Validation successful: All required fields are present.")
+		} else {
+			log.Println("Validation failed: Missing required fields:")
+			for _, field := range missing {
+				log.Printf("\t- %s\n", field)
+			}
+		}
+
 	},
 }
 
@@ -40,7 +55,7 @@ func init() {
 
 	validateCmd.Flags().StringVarP(
 		&validationTemplate,
-		"template",
+		"theme",
 		"t",
 		"normal",
 		"Template to validate against",
