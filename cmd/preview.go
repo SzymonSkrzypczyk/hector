@@ -14,6 +14,7 @@ var (
 	selectedThemePreview string
 	valuesPathPreview    string
 	noOpen               bool
+	watchPreview         bool
 )
 
 func openBrowser(path string) error {
@@ -33,6 +34,10 @@ func openBrowser(path string) error {
 	return cmd.Start()
 }
 
+func checkChangesData() {
+	// placeholder
+}
+
 var previewCmd = &cobra.Command{
 	Use:   "preview",
 	Short: "Preview your CV in the browser",
@@ -48,6 +53,12 @@ var previewCmd = &cobra.Command{
 		err := openBrowser(htmlPath)
 		if err != nil {
 			log.Printf("Failed to open browser: %v\n", err)
+		}
+
+		if watchPreview {
+			for {
+				// watch data file for changes and regenerate preview
+			}
 		}
 	},
 }
@@ -74,6 +85,13 @@ func init() {
 		"no-open",
 		false,
 		"Generate preview without opening browser",
+	)
+
+	previewCmd.Flags().BoolVar(
+		&watchPreview,
+		"watch",
+		false,
+		"Watch for changes and regenerate preview automatically",
 	)
 
 	rootCmd.AddCommand(previewCmd)
