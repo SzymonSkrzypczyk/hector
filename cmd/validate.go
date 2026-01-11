@@ -12,7 +12,6 @@ var (
 	validationTemplate string
 )
 
-// validateCmd represents the validate command
 var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate the CV data file",
@@ -46,4 +45,6 @@ func init() {
 		"normal",
 		"Template to validate against",
 	)
+
+	validateCmd.MarkFlagRequired("data")
 }
