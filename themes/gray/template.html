@@ -9,16 +9,13 @@
 
 <div class="page">
 
-    <!-- SIDEBAR BACKGROUND -->
     <aside class="sidebar"></aside>
 
-    <!-- SIDEBAR CONTENT (ONCE ONLY) -->
     <div class="sidebar-content">
 
         <div class="profile-photo">
             {{ if .Photo }}
-            <img src="photo.jpg"
-                 alt="Profile Photo">
+            <img src="photo.jpg" alt="Profile Photo">
             {{ end }}
         </div>
 
@@ -30,29 +27,14 @@
         <div class="sidebar-section">
             <h3>CONTACT</h3>
             {{ if .Contact.Phone }}
-            <div class="contact-item">
-                <strong>Phone:</strong> {{ .Contact.Phone }}
-            </div>
+            <div class="contact-item"><strong>Phone:</strong> {{ .Contact.Phone }}</div>
             {{ end }}
             {{ if .Contact.Email }}
-            <div class="contact-item">
-                <strong>Email:</strong> {{ .Contact.Email }}
-            </div>
+            <div class="contact-item"><strong>Email:</strong> {{ .Contact.Email }}</div>
             {{ end }}
             {{ if .Contact.Address }}
-            <div class="contact-item">
-                <strong>Address:</strong> {{ .Contact.Address }}
-            </div>
+            <div class="contact-item"><strong>Address:</strong> {{ .Contact.Address }}</div>
             {{ end }}
-        </div>
-
-        <div class="sidebar-section">
-            <h3>ACHIEVEMENTS</h3>
-            <ul class="sidebar-list">
-                {{ range .Certifications }}
-                <li>{{ . }}</li>
-                {{ end }}
-            </ul>
         </div>
 
         <div class="sidebar-section">
@@ -65,9 +47,9 @@
         </div>
 
         <div class="sidebar-section">
-            <h3>ACTIVITIES</h3>
+            <h3>ACHIEVEMENTS</h3>
             <ul class="sidebar-list">
-                {{ range .ExtraActivities }}
+                {{ range .Certifications }}
                 <li>{{ . }}</li>
                 {{ end }}
             </ul>
@@ -75,7 +57,6 @@
 
     </div>
 
-    <!-- MAIN CONTENT -->
     <main class="main-column">
 
         <header class="header">

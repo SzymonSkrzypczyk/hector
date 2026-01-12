@@ -5,11 +5,6 @@
     padding: 0;
 }
 
-html, body {
-    margin: 0;
-    padding: 0;
-}
-
 body {
     font-family: 'Montserrat', 'Segoe UI', sans-serif;
     background-color: #555;
@@ -20,21 +15,20 @@ body {
     print-color-adjust: exact;
 }
 
-/* PAGE SETUP */
-@page {
-    size: A4;
-    margin: 0;
-}
-
 /* PAGE CONTAINER */
 .page {
     width: 210mm;
     margin: 0 auto;
     background: white;
-    position: relative;
+    position: relative; /* Essential for absolute positioning of sidebar content */
+    min-height: 297mm;  /* Ensure full A4 height */
+    overflow: hidden;   /* Ensures background colors don't bleed weirdly */
 }
 
-/* SIDEBAR BACKGROUND (REPEATS EVERY PAGE) */
+/* SIDEBAR BACKGROUND (The visual gray bar)
+   We keep this FIXED so the gray column persists on Page 2
+   to maintain the visual layout structure.
+*/
 .sidebar {
     position: fixed;
     top: 0;
@@ -42,12 +36,16 @@ body {
     width: 35%;
     height: 100%;
     background-color: #f4f4f4;
-    z-index: 1;
+    z-index: 0; /* Behind everything */
 }
 
-/* SIDEBAR CONTENT (RENDERS ONCE) */
+/* SIDEBAR CONTENT (The actual text/photo)
+   CHANGED: 'absolute' instead of 'fixed'.
+   This anchors it to the top of the .page container (Page 1)
+   so it will NOT repeat on Page 2.
+*/
 .sidebar-content {
-    position: fixed;       /* Fixed to sidebar so it stays in place */
+    position: absolute;
     top: 0;
     right: 0;
     width: 35%;
@@ -56,24 +54,23 @@ body {
     display: flex;
     flex-direction: column;
     gap: 30px;
-    height: 100%;          /* Important: allow full height */
-    overflow-y: auto;      /* Scroll if content overflows */
-    z-index: 2;
-    background-color: transparent; /* Let sidebar background show */
+    z-index: 10;
+    /* Removed overflow-y: auto (bad for print) */
+    /* Removed height: 100% (let it flow naturally) */
 }
 
 /* LEFT COLUMN: MAIN CONTENT */
 .main-column {
+    /* This margin pushes the text away from the sidebar area on ALL pages */
     margin-right: 35%;
     padding: 50px 40px;
-    background-color: #fff;
+    background-color: transparent; /* Changed to transparent to see page bg */
+    position: relative;
+    z-index: 5;
 }
 
 /* HEADER STYLE */
-.header {
-    margin-bottom: 50px;
-}
-
+.header { margin-bottom: 50px; }
 .header h1 {
     font-size: 32px;
     font-weight: 800;
@@ -82,7 +79,6 @@ body {
     color: #222;
     margin-bottom: 5px;
 }
-
 .header h2 {
     font-size: 16px;
     font-weight: 400;
@@ -92,10 +88,7 @@ body {
 }
 
 /* SECTIONS */
-.section {
-    margin-bottom: 40px;
-}
-
+.section { margin-bottom: 40px; }
 .section-title {
     font-size: 14px;
     font-weight: 700;
@@ -105,6 +98,7 @@ body {
     padding-bottom: 10px;
     margin-bottom: 20px;
     color: #222;
+    /* Prevent headers from being stranded at bottom of page */
     break-after: avoid;
     page-break-after: avoid;
 }
@@ -112,8 +106,10 @@ body {
 /* ENTRIES */
 .entry {
     margin-bottom: 25px;
+    /* Keep entry blocks together if possible */
+    break-inside: avoid;
+    page-break-inside: avoid;
 }
-
 .entry-header {
     display: flex;
     justify-content: space-between;
@@ -121,7 +117,6 @@ body {
     font-weight: 700;
     font-size: 14px;
 }
-
 .entry-company {
     font-size: 12px;
     color: #666;
@@ -129,11 +124,7 @@ body {
     font-style: italic;
     font-weight: 500;
 }
-
-.entry-details {
-    list-style: none;
-}
-
+.entry-details { list-style: none; }
 .entry-details li {
     position: relative;
     padding-left: 15px;
@@ -141,7 +132,6 @@ body {
     color: #555;
     font-size: 12px;
 }
-
 .entry-details li::before {
     content: "•";
     position: absolute;
@@ -158,7 +148,6 @@ body {
     background-color: #ccc;
     margin-bottom: 20px;
 }
-
 .profile-photo img {
     width: 100%;
     height: 100%;
@@ -177,7 +166,6 @@ body {
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
 }
-
 .about-text {
     font-size: 12px;
     font-style: italic;
@@ -185,10 +173,7 @@ body {
 }
 
 /* SIDEBAR LISTS */
-.sidebar-list {
-    list-style: none;
-}
-
+.sidebar-list { list-style: none; }
 .sidebar-list li {
     margin-bottom: 8px;
     font-size: 12px;
@@ -196,17 +181,12 @@ body {
     padding-left: 10px;
 }
 
-/* PRINT */
+/* PRINT MEDIA QUERY */
 @media print {
-    body {
-        background: none;
-    }
-
+    body { background: none; }
     .page {
         box-shadow: none;
-    }
-
-    .sidebar {
-        -webkit-print-color-adjust: exact;
+        width: 100%;
+        margin: 0;
     }
 }
