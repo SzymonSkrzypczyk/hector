@@ -23,9 +23,14 @@ func isEmpty(val reflect.Value) bool {
 func ValidateRequiredFields(s interface{}) []string {
 	var missing []string
 	val := reflect.ValueOf(s)
+
 	if val.Kind() == reflect.Ptr {
+		if val.IsNil() {
+			return missing
+		}
 		val = val.Elem()
 	}
+
 	if val.Kind() != reflect.Struct {
 		return missing
 	}
@@ -41,18 +46,23 @@ func ValidateRequiredFields(s interface{}) []string {
 			missing = append(missing, fieldType.Name)
 		}
 
-		if field.Kind() == reflect.Struct {
+		if field.Kind() == reflect.Struct || (field.Kind() == reflect.Ptr && !field.IsNil()) {
 			nested := ValidateRequiredFields(field.Interface())
 			for _, n := range nested {
 				missing = append(missing, fieldType.Name+"."+n)
 			}
 		}
 
-		if field.Kind() == reflect.Slice && field.Type().Elem().Kind() == reflect.Struct {
-			for j := 0; j < field.Len(); j++ {
-				nested := ValidateRequiredFields(field.Index(j).Interface())
-				for _, n := range nested {
-					missing = append(missing, fieldType.Name+fmt.Sprintf("[%d].%s", j, n))
+		isSlice := field.Kind() == reflect.Slice
+		if isSlice {
+			elemKind := field.Type().Elem().Kind()
+			// Allow recursion if slice contains Structs OR Pointers
+			if elemKind == reflect.Struct || elemKind == reflect.Ptr {
+				for j := 0; j < field.Len(); j++ {
+					nested := ValidateRequiredFields(field.Index(j).Interface())
+					for _, n := range nested {
+						missing = append(missing, fieldType.Name+fmt.Sprintf("[%d].%s", j, n))
+					}
 				}
 			}
 		}
