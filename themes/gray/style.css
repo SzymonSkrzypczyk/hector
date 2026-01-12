@@ -1,4 +1,3 @@
-/* RESET & BASE */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -15,20 +14,15 @@ body {
     print-color-adjust: exact;
 }
 
-/* PAGE CONTAINER */
 .page {
     width: 210mm;
     margin: 0 auto;
     background: white;
-    position: relative; /* Essential for absolute positioning of sidebar content */
-    min-height: 297mm;  /* Ensure full A4 height */
-    overflow: hidden;   /* Ensures background colors don't bleed weirdly */
+    position: relative;
+    min-height: 297mm;
+    overflow: hidden;
 }
 
-/* SIDEBAR BACKGROUND (The visual gray bar)
-   We keep this FIXED so the gray column persists on Page 2
-   to maintain the visual layout structure.
-*/
 .sidebar {
     position: fixed;
     top: 0;
@@ -39,11 +33,6 @@ body {
     z-index: 0; /* Behind everything */
 }
 
-/* SIDEBAR CONTENT (The actual text/photo)
-   CHANGED: 'absolute' instead of 'fixed'.
-   This anchors it to the top of the .page container (Page 1)
-   so it will NOT repeat on Page 2.
-*/
 .sidebar-content {
     position: absolute;
     top: 0;
@@ -55,21 +44,16 @@ body {
     flex-direction: column;
     gap: 30px;
     z-index: 10;
-    /* Removed overflow-y: auto (bad for print) */
-    /* Removed height: 100% (let it flow naturally) */
 }
 
-/* LEFT COLUMN: MAIN CONTENT */
 .main-column {
-    /* This margin pushes the text away from the sidebar area on ALL pages */
     margin-right: 35%;
     padding: 50px 40px;
-    background-color: transparent; /* Changed to transparent to see page bg */
+    background-color: transparent;
     position: relative;
     z-index: 5;
 }
 
-/* HEADER STYLE */
 .header { margin-bottom: 50px; }
 .header h1 {
     font-size: 32px;
@@ -87,7 +71,6 @@ body {
     color: #666;
 }
 
-/* SECTIONS */
 .section { margin-bottom: 40px; }
 .section-title {
     font-size: 14px;
@@ -98,15 +81,12 @@ body {
     padding-bottom: 10px;
     margin-bottom: 20px;
     color: #222;
-    /* Prevent headers from being stranded at bottom of page */
     break-after: avoid;
     page-break-after: avoid;
 }
 
-/* ENTRIES */
 .entry {
     margin-bottom: 25px;
-    /* Keep entry blocks together if possible */
     break-inside: avoid;
     page-break-inside: avoid;
 }
@@ -139,7 +119,6 @@ body {
     color: #888;
 }
 
-/* PHOTO */
 .profile-photo {
     width: 120px;
     height: 120px;
@@ -155,7 +134,6 @@ body {
     display: block;
 }
 
-/* SIDEBAR SECTIONS */
 .sidebar-section h3 {
     font-size: 12px;
     font-weight: 800;
@@ -172,7 +150,6 @@ body {
     color: #666;
 }
 
-/* SIDEBAR LISTS */
 .sidebar-list { list-style: none; }
 .sidebar-list li {
     margin-bottom: 8px;
@@ -181,7 +158,6 @@ body {
     padding-left: 10px;
 }
 
-/* PRINT MEDIA QUERY */
 @media print {
     body { background: none; }
     .page {

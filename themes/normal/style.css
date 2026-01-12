@@ -1,14 +1,12 @@
-/* RESET */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-/* PAGE SETUP */
 @page {
     size: A4;
-    margin: 0; /* Important to ensure fixed elements hit the edges */
+    margin: 0;
 }
 
 body {
@@ -18,24 +16,19 @@ body {
     line-height: 1.5;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    background-color: #555; /* visual background for screen view */
+    background-color: #555;
 }
 
-/* PAGE CONTAINER */
 .page {
-    position: relative; /* Anchors the absolute sidebar content */
+    position: relative;
     width: 210mm;
     margin: 0 auto;
     background: white;
     min-height: 297mm;
-    overflow: hidden; /* Keeps background colors contained */
+    overflow: hidden;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* 1. SIDEBAR BACKGROUND
-   This is the visual blue bar.
-   FIXED position means it repeats on every printed page.
-*/
 .sidebar-background {
     position: fixed;
     top: 0;
@@ -43,13 +36,9 @@ body {
     width: 30%;
     height: 100%;
     background-color: #2e4053;
-    z-index: 0; /* Behind everything */
+    z-index: 0;
 }
 
-/* 2. SIDEBAR CONTENT
-   This contains the text and photo.
-   ABSOLUTE position means it sticks to Page 1 only.
-*/
 .sidebar-content {
     position: absolute;
     top: 0;
@@ -60,10 +49,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 25px;
-    z-index: 10; /* On top of the blue background */
+    z-index: 10;
 }
 
-/* PROFILE PHOTO */
 .profile-photo {
     width: 150px;
     height: 150px;
@@ -78,7 +66,6 @@ body {
     object-fit: cover;
 }
 
-/* SIDEBAR SECTIONS */
 .sidebar-section h3 {
     text-transform: uppercase;
     font-size: 16px;
@@ -106,15 +93,13 @@ body {
     margin-bottom: 6px;
 }
 
-/* MAIN CONTENT */
 .main-content {
-    margin-left: 30%; /* Pushes text right to respect the sidebar column */
+    margin-left: 30%;
     padding: 40px 30px;
     position: relative;
     z-index: 5;
 }
 
-/* HEADER */
 .header h1 {
     text-transform: uppercase;
     font-size: 28px;
@@ -124,7 +109,6 @@ body {
     margin-bottom: 30px;
 }
 
-/* SECTIONS */
 .section {
     margin-bottom: 25px;
     break-inside: avoid;
@@ -149,7 +133,6 @@ body {
     color: #555;
 }
 
-/* ENTRIES */
 .entry {
     margin-bottom: 18px;
     break-inside: avoid;
@@ -188,7 +171,6 @@ body {
     margin-bottom: 3px;
 }
 
-/* SIMPLE LISTS */
 .simple-list {
     list-style: none;
 }
@@ -207,7 +189,6 @@ body {
     font-weight: bold;
 }
 
-/* FOOTER */
 .footer {
     margin-top: 40px;
     font-size: 8px;
@@ -218,7 +199,6 @@ body {
     break-inside: avoid;
 }
 
-/* PRINT MEDIA */
 @media print {
     body {
         background: none;
