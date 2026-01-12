@@ -5,9 +5,14 @@
     padding: 0;
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    font-family: 'Montserrat', 'Segoe UI', sans-serif; /* Clean, modern font */
-    background-color: #555; /* Dark background behind the page */
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    background-color: #555;
     color: #333;
     font-size: 13px;
     line-height: 1.6;
@@ -15,19 +20,51 @@ body {
     print-color-adjust: exact;
 }
 
-/* PAGE CONTAINER (A4) */
+/* PAGE SETUP */
+@page {
+    size: A4;
+    margin: 0;
+}
+
+/* PAGE CONTAINER */
 .page {
     width: 210mm;
-    min-height: 297mm;
+    margin: 0 auto;
     background: white;
-    margin: 40px auto;
-    display: grid;
-    grid-template-columns: 65% 35%; /* Main Content (Left) | Sidebar (Right) */
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+/* SIDEBAR BACKGROUND (REPEATS EVERY PAGE) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 35%;
+    height: 100%;
+    background-color: #f4f4f4;
+    z-index: 1;
+}
+
+/* SIDEBAR CONTENT (RENDERS ONCE) */
+.sidebar-content {
+    position: fixed;       /* Fixed to sidebar so it stays in place */
+    top: 0;
+    right: 0;
+    width: 35%;
+    padding: 50px 30px;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    height: 100%;          /* Important: allow full height */
+    overflow-y: auto;      /* Scroll if content overflows */
+    z-index: 2;
+    background-color: transparent; /* Let sidebar background show */
 }
 
 /* LEFT COLUMN: MAIN CONTENT */
 .main-column {
+    margin-right: 35%;
     padding: 50px 40px;
     background-color: #fff;
 }
@@ -54,7 +91,7 @@ body {
     color: #666;
 }
 
-/* SECTIONS (Main) */
+/* SECTIONS */
 .section {
     margin-bottom: 40px;
 }
@@ -68,9 +105,11 @@ body {
     padding-bottom: 10px;
     margin-bottom: 20px;
     color: #222;
+    break-after: avoid;
+    page-break-after: avoid;
 }
 
-/* ENTRIES (Experience/Education) */
+/* ENTRIES */
 .entry {
     margin-bottom: 25px;
 }
@@ -93,7 +132,6 @@ body {
 
 .entry-details {
     list-style: none;
-    padding-left: 0;
 }
 
 .entry-details li {
@@ -111,24 +149,21 @@ body {
     color: #888;
 }
 
-/* RIGHT COLUMN: SIDEBAR */
-.sidebar {
-    background-color: #f4f4f4; /* Light Gray Background */
-    padding: 50px 30px;
-    color: #444;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
-
-/* PHOTO PLACEHOLDER */
+/* PHOTO */
 .profile-photo {
     width: 120px;
     height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
     background-color: #ccc;
-    border-radius: 50%; /* Circle */
     margin-bottom: 20px;
-    /* align-self: center; Optional: center photo in sidebar */
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 /* SIDEBAR SECTIONS */
@@ -147,26 +182,9 @@ body {
     font-size: 12px;
     font-style: italic;
     color: #666;
-    text-align: left;
-    margin-bottom: 10px;
 }
 
-.contact-item {
-    font-size: 12px;
-    margin-bottom: 10px;
-    word-wrap: break-word;
-}
-
-.contact-item strong {
-    display: block;
-    font-weight: 700;
-    color: #222;
-    font-size: 10px;
-    text-transform: uppercase;
-    margin-bottom: 2px;
-}
-
-/* SIDEBAR LISTS (Skills, Activities) */
+/* SIDEBAR LISTS */
 .sidebar-list {
     list-style: none;
 }
@@ -178,14 +196,17 @@ body {
     padding-left: 10px;
 }
 
-/* PRINT SETTINGS */
+/* PRINT */
 @media print {
-    body { background: none; margin: 0; }
-    .page { width: 100%; margin: 0; box-shadow: none; border: none; }
+    body {
+        background: none;
+    }
 
-    /* Force background colors to print */
+    .page {
+        box-shadow: none;
+    }
+
     .sidebar {
-        background-color: #f4f4f4 !important;
         -webkit-print-color-adjust: exact;
     }
 }
