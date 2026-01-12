@@ -86,7 +86,6 @@ func TestValidateRequiredFields(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ValidateRequiredFields(tt.input)
 			if !reflect.DeepEqual(got, tt.expected) {
-				// Handle nil vs empty slice comparison
 				if len(got) == 0 && len(tt.expected) == 0 {
 					return
 				}

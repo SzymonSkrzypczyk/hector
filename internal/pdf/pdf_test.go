@@ -8,7 +8,6 @@ import (
 )
 
 func TestGeneratePDF(t *testing.T) {
-	// 1. Setup Input HTML
 	tempDir := t.TempDir()
 	htmlPath := filepath.Join(tempDir, "index.html")
 	htmlContent := []byte(`
@@ -23,7 +22,6 @@ func TestGeneratePDF(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// 2. Setup StyleGuide
 	style := schemas.PDFSchema{
 		MarginTop:    0,
 		MarginBottom: 0,
@@ -32,14 +30,10 @@ func TestGeneratePDF(t *testing.T) {
 		Scale:        1.0,
 	}
 
-	// 3. Define Output
 	outputDir := filepath.Join(tempDir, "output")
 
-	// 4. Run Generation
-	// Note: This might take a second or two as it launches a browser
 	GeneratePDF(htmlPath, style, outputDir)
 
-	// 5. Assertions
 	expectedPDF := filepath.Join(outputDir, "result_cv.pdf")
 	info, err := os.Stat(expectedPDF)
 	if os.IsNotExist(err) {

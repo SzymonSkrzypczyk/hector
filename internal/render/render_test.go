@@ -28,13 +28,10 @@ func (m *MockTheme) TemplateDetails() schemas.FileSchema {
 func (m *MockTheme) PDFDetails() schemas.PDFSchema { return schemas.PDFSchema{} }
 
 func TestRender(t *testing.T) {
-	// Setup: Create necessary directories
 	cwd, _ := os.Getwd()
-	// We use Join to handle OS-specific separators correctly
 	themeDir := filepath.Join(cwd, "themes", "mock_theme")
 	outputDir := filepath.Join(cwd, "output")
 
-	// Cleanup function
 	defer func() {
 		os.RemoveAll(filepath.Join(cwd, "themes"))
 		os.RemoveAll(outputDir)
@@ -45,26 +42,22 @@ func TestRender(t *testing.T) {
 		t.Fatalf("Failed to create mock theme dir: %v", err)
 	}
 
-	// Create dummy index.html
 	htmlContent := []byte(`<html><body><h1>{{.Title}}</h1></body></html>`)
 	err = os.WriteFile(filepath.Join(themeDir, "index.html"), htmlContent, 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Create dummy style.css
 	cssContent := []byte(`body { color: red; }`)
 	err = os.WriteFile(filepath.Join(themeDir, "style.css"), cssContent, 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Test Case: Execute Render
 	mockData := &MockTheme{Title: "Hello Hector"}
 
 	outputPath := Render(mockData)
 
-	// FIX: Convert the returned relative path to an absolute path for comparison
 	absOutputPath, err := filepath.Abs(outputPath)
 	if err != nil {
 		t.Fatalf("Failed to resolve absolute path of output: %v", err)
@@ -72,12 +65,10 @@ func TestRender(t *testing.T) {
 
 	expectedOutput := filepath.Join(outputDir, "normal_resume.html")
 
-	// Assertions
 	if absOutputPath != expectedOutput {
 		t.Errorf("Path mismatch.\nExpected: %s\nGot:      %s", expectedOutput, absOutputPath)
 	}
 
-	// Verify HTML content
 	content, err := os.ReadFile(absOutputPath)
 	if err != nil {
 		t.Fatalf("Failed to read output file: %v", err)
@@ -86,7 +77,6 @@ func TestRender(t *testing.T) {
 		t.Errorf("HTML content mismatch. Got: %s", string(content))
 	}
 
-	// Verify CSS copy
 	if _, err := os.Stat(filepath.Join(outputDir, "style.css")); os.IsNotExist(err) {
 		t.Error("style.css was not copied to output directory")
 	}

@@ -18,7 +18,6 @@ func (m *MockSchema) PDFDetails() schemas.PDFSchema       { return schemas.PDFSc
 func (m MockSchema) Validate() (bool, []string)           { return true, nil }
 
 func TestParse(t *testing.T) {
-	// 1. Create a temporary YAML file
 	content := []byte(`
 name: Hector User
 description: Software Engineer
@@ -36,14 +35,10 @@ description: Software Engineer
 		t.Fatal(err)
 	}
 
-	// 2. Prepare schema
 	schema := &MockSchema{}
 
-	// 3. Execute Parse
-	// Note: Parse returns the interface, we assert on the underlying struct
 	result := Parse(tmpFile.Name(), schema)
 
-	// 4. Validate
 	parsed, ok := result.(*MockSchema)
 	if !ok {
 		t.Fatalf("Expected *MockSchema, got %T", result)
