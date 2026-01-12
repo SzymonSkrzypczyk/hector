@@ -8,6 +8,7 @@
 /* PAGE SETUP */
 @page {
     size: A4;
+    margin: 0; /* Important to ensure fixed elements hit the edges */
 }
 
 body {
@@ -17,21 +18,49 @@ body {
     line-height: 1.5;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    background-color: #555; /* visual background for screen view */
 }
 
-/* SIDEBAR (REPEATS ON EVERY PAGE) */
-.sidebar {
+/* PAGE CONTAINER */
+.page {
+    position: relative; /* Anchors the absolute sidebar content */
+    width: 210mm;
+    margin: 0 auto;
+    background: white;
+    min-height: 297mm;
+    overflow: hidden; /* Keeps background colors contained */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* 1. SIDEBAR BACKGROUND
+   This is the visual blue bar.
+   FIXED position means it repeats on every printed page.
+*/
+.sidebar-background {
     position: fixed;
     top: 0;
     left: 0;
     width: 30%;
     height: 100%;
     background-color: #2e4053;
-    color: white;
+    z-index: 0; /* Behind everything */
+}
+
+/* 2. SIDEBAR CONTENT
+   This contains the text and photo.
+   ABSOLUTE position means it sticks to Page 1 only.
+*/
+.sidebar-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
     padding: 30px 20px;
+    color: white;
     display: flex;
     flex-direction: column;
     gap: 25px;
+    z-index: 10; /* On top of the blue background */
 }
 
 /* PROFILE PHOTO */
@@ -57,6 +86,7 @@ body {
     padding-bottom: 5px;
     margin-bottom: 10px;
     letter-spacing: 1px;
+    color: white;
 }
 
 .contact-info div {
@@ -78,8 +108,10 @@ body {
 
 /* MAIN CONTENT */
 .main-content {
-    margin-left: 30%;
+    margin-left: 30%; /* Pushes text right to respect the sidebar column */
     padding: 40px 30px;
+    position: relative;
+    z-index: 5;
 }
 
 /* HEADER */
@@ -186,8 +218,14 @@ body {
     break-inside: avoid;
 }
 
-/* MANUAL PAGE BREAK (optional) */
-.page-break {
-    break-before: page;
-    page-break-before: always;
+/* PRINT MEDIA */
+@media print {
+    body {
+        background: none;
+    }
+    .page {
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+    }
 }
