@@ -1,6 +1,8 @@
 # Hector
 A static cv generator for developers who are tired of changing their only CV created in existance.
 
+![logo](docs/assets/logo_transparent.png)
+
 ## Features
 - Generate a professional CV in PDF format.
 - Easy to customize with your personal information.
