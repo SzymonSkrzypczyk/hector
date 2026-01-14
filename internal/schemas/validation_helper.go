@@ -64,7 +64,7 @@ func parsePeriod(period string) (start, end *time.Time, err error) {
 	return &startTime, endTime, nil
 }
 
-func ValidateChronologicalPeriods(periods []string) []ValidationFlaw {
+func validateChronologicalPeriods(periods []string) []ValidationFlaw {
 	var flaws []ValidationFlaw
 	var prevStart *time.Time
 
@@ -99,6 +99,24 @@ func ValidateChronologicalPeriods(periods []string) []ValidationFlaw {
 	}
 
 	return flaws
+}
+
+func checkDuplicates(slice reflect.Value) []string {
+	seen := make(map[string]bool)
+	var duplicates []string
+	for i := 0; i < slice.Len(); i++ {
+		item := slice.Index(i)
+		if item.Kind() != reflect.String {
+			continue
+		}
+		str := item.String()
+		if seen[str] {
+			duplicates = append(duplicates, str)
+		} else {
+			seen[str] = true
+		}
+	}
+	return duplicates
 }
 
 func GroupByKind(flaws []ValidationFlaw) map[string][]string {
@@ -229,11 +247,22 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 					}
 				}
 			}
+
+			if elemKind == reflect.String {
+				dups := checkDuplicates(field)
+				for _, d := range dups {
+					validationFlaws = append(validationFlaws,
+						ValidationFlaw{
+							"duplicate_entry",
+							fieldType.Name + " (duplicate: " + d + ")",
+						})
+				}
+			}
 		}
 
 		// Also check if the current field itself is tagged with "date" and is a string
 		if validate_tag == "date" && field.Kind() == reflect.String {
-			dateFlaws := ValidateChronologicalPeriods([]string{field.String()})
+			dateFlaws := validateChronologicalPeriods([]string{field.String()})
 			for _, f := range dateFlaws {
 				validationFlaws = append(validationFlaws,
 					ValidationFlaw{
