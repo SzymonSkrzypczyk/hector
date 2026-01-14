@@ -62,13 +62,13 @@ type NormalLanguage struct {
 type NormalEducation struct {
 	Institution string   `yaml:"institution" json:"institution" max_len:"70"`
 	Degree      string   `yaml:"degree" json:"degree"`
-	Dates       string   `yaml:"period" json:"period"`
+	Dates       string   `yaml:"period" json:"period" validate:"date"`
 	Details     []string `yaml:"details" json:"details"`
 }
 
 type NormalExperience struct {
 	Role             string   `yaml:"role" json:"role" max_len:"40"`
 	Company          string   `yaml:"company" json:"company"`
-	Dates            string   `yaml:"period" json:"period"`
+	Dates            string   `yaml:"period" json:"period" validate:"date"`
 	Responsibilities []string `yaml:"responsibilities" json:"responsibilities"`
 }

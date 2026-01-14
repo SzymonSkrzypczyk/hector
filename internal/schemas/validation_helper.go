@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"strings"
+	"time"
 )
 
 const (
@@ -33,14 +35,70 @@ func isEmpty(val reflect.Value) bool {
 	}
 }
 
-func ValidatePhone(phoneNumber string) bool {
-	re := regexp.MustCompile(`^\+?[1-9]\d{1,14}$`)
-	return re.MatchString(phoneNumber)
+func parsePeriod(period string) (start, end *time.Time, err error) {
+	parts := strings.Split(period, "-")
+	if len(parts) != 2 {
+		return nil, nil, fmt.Errorf("invalid period format: %s", period)
+	}
+
+	startStr := strings.TrimSpace(parts[0])
+	endStr := strings.TrimSpace(parts[1])
+
+	layout := "January 2006" // Example: "March 2024"
+	startTime, err := time.Parse(layout, startStr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("cannot parse start date: %v", err)
+	}
+
+	var endTime *time.Time
+	if strings.EqualFold(endStr, "Onwards") {
+		endTime = nil // nil means ongoing
+	} else {
+		et, err := time.Parse(layout, endStr)
+		if err != nil {
+			return nil, nil, fmt.Errorf("cannot parse end date: %v", err)
+		}
+		endTime = &et
+	}
+
+	return &startTime, endTime, nil
 }
 
-func ValidateEmail(email string) bool {
-	re := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-	return re.MatchString(email)
+func ValidateChronologicalPeriods(periods []string) []ValidationFlaw {
+	var flaws []ValidationFlaw
+	var prevStart *time.Time
+
+	for i, p := range periods {
+		start, end, err := parsePeriod(p)
+		if err != nil {
+			flaws = append(flaws,
+				ValidationFlaw{
+					"invalid_period",
+					fmt.Sprintf("period[%d]", i),
+				})
+			continue
+		}
+
+		if end != nil && start.After(*end) {
+			flaws = append(flaws,
+				ValidationFlaw{
+					"invalid_period",
+					fmt.Sprintf("period[%d] (start after end)", i),
+				})
+		}
+
+		if prevStart != nil && start.Before(*prevStart) {
+			flaws = append(flaws,
+				ValidationFlaw{
+					"not_chronological",
+					fmt.Sprintf("period[%d] (earlier than previous element)", i),
+				})
+		}
+
+		prevStart = start
+	}
+
+	return flaws
 }
 
 func GroupByKind(flaws []ValidationFlaw) map[string][]string {
@@ -52,18 +110,18 @@ func GroupByKind(flaws []ValidationFlaw) map[string][]string {
 }
 
 func ValidateFields(s interface{}) []ValidationFlaw {
-	var validation_flaws []ValidationFlaw
+	var validationFlaws []ValidationFlaw
 	val := reflect.ValueOf(s)
 
 	if val.Kind() == reflect.Ptr {
 		if val.IsNil() {
-			return validation_flaws
+			return validationFlaws
 		}
 		val = val.Elem()
 	}
 
 	if val.Kind() != reflect.Struct {
-		return validation_flaws
+		return validationFlaws
 	}
 
 	typ := val.Type()
@@ -75,14 +133,16 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 		max_len_tag := fieldType.Tag.Get("max_len")
 		regexTag := fieldType.Tag.Get("expected_regex")
 
+		// Required field check
 		if validate_tag == "required" && isEmpty(field) {
-			validation_flaws = append(validation_flaws,
+			validationFlaws = append(validationFlaws,
 				ValidationFlaw{
 					"required",
 					fieldType.Name,
 				})
 		}
 
+		// Max length check
 		if max_len_tag != "" {
 			converted_max_len, err := strconv.Atoi(max_len_tag)
 			if err != nil {
@@ -90,27 +150,29 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 			}
 
 			if field.Kind() == reflect.String && field.Len() > converted_max_len {
-				validation_flaws = append(validation_flaws, ValidationFlaw{
+				validationFlaws = append(validationFlaws, ValidationFlaw{
 					"max_len",
 					fieldType.Name,
 				})
 			}
 		}
 
+		// format check
 		if regexTag != "" && field.Kind() == reflect.String {
 			re := regexp.MustCompile(regexTag)
 			if !re.MatchString(field.String()) {
-				validation_flaws = append(validation_flaws, ValidationFlaw{
+				validationFlaws = append(validationFlaws, ValidationFlaw{
 					"wrong_format",
 					fieldType.Name,
 				})
 			}
 		}
 
+		// Nested structs or pointers
 		if field.Kind() == reflect.Struct || (field.Kind() == reflect.Ptr && !field.IsNil()) {
 			nested := ValidateFields(field.Interface())
 			for _, n := range nested {
-				validation_flaws = append(validation_flaws,
+				validationFlaws = append(validationFlaws,
 					ValidationFlaw{
 						n.kind,
 						fieldType.Name + "." + n.name,
@@ -118,24 +180,69 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 			}
 		}
 
-		isSlice := field.Kind() == reflect.Slice
-		if isSlice {
+		// Slice handling
+		if field.Kind() == reflect.Slice {
 			elemKind := field.Type().Elem().Kind()
-			// Allow recursion if slice contains Structs OR Pointers
 			if elemKind == reflect.Struct || elemKind == reflect.Ptr {
+				var prevStart *time.Time
 				for j := 0; j < field.Len(); j++ {
-					nested := ValidateFields(field.Index(j).Interface())
+					elemVal := field.Index(j)
+					if elemVal.Kind() == reflect.Ptr && !elemVal.IsNil() {
+						elemVal = elemVal.Elem()
+					}
+
+					// validate nested fields
+					nested := ValidateFields(elemVal.Interface())
 					for _, n := range nested {
-						validation_flaws = append(validation_flaws,
+						validationFlaws = append(validationFlaws,
 							ValidationFlaw{
 								n.kind,
-								fieldType.Name + fmt.Sprintf("[%d].%s", j, n),
+								fieldType.Name + fmt.Sprintf("[%d].%s", j, n.name),
 							})
+					}
+
+					// Check for "date" fields in this element
+					if elemVal.Kind() == reflect.Struct {
+						for k := 0; k < elemVal.NumField(); k++ {
+							subFieldType := elemVal.Type().Field(k)
+							subField := elemVal.Field(k)
+							if subFieldType.Tag.Get("validate") == "date" && subField.Kind() == reflect.String {
+								start, _, err := parsePeriod(subField.String())
+								if err != nil {
+									validationFlaws = append(validationFlaws,
+										ValidationFlaw{
+											"invalid_period",
+											fieldType.Name + fmt.Sprintf("[%d].%s", j, subFieldType.Name),
+										})
+									continue
+								}
+								if prevStart != nil && start.Before(*prevStart) {
+									validationFlaws = append(validationFlaws,
+										ValidationFlaw{
+											"not_chronological",
+											fieldType.Name + fmt.Sprintf("[%d].%s", j, subFieldType.Name),
+										})
+								}
+								prevStart = start
+							}
+						}
 					}
 				}
 			}
 		}
+
+		// Also check if the current field itself is tagged with "date" and is a string
+		if validate_tag == "date" && field.Kind() == reflect.String {
+			dateFlaws := ValidateChronologicalPeriods([]string{field.String()})
+			for _, f := range dateFlaws {
+				validationFlaws = append(validationFlaws,
+					ValidationFlaw{
+						f.kind,
+						fieldType.Name,
+					})
+			}
+		}
 	}
 
-	return validation_flaws
+	return validationFlaws
 }

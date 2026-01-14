@@ -64,13 +64,13 @@ type GrayLanguage struct {
 type GrayEducation struct {
 	Institution string   `yaml:"institution" json:"institution" max_len:"70"`
 	Degree      string   `yaml:"degree" json:"degree"`
-	Dates       string   `yaml:"dates" json:"dates"` // Mapped to 'dates' from YAML
+	Dates       string   `yaml:"dates" json:"dates" validate:"date"`
 	Details     []string `yaml:"details" json:"details"`
 }
 
 type GrayExperience struct {
 	Role             string   `yaml:"role" json:"role" max_len:"40"`
 	Company          string   `yaml:"company" json:"company"`
-	Dates            string   `yaml:"dates" json:"dates"` // Mapped to 'dates' from YAML
+	Dates            string   `yaml:"dates" json:"dates" validate:"date"`
 	Responsibilities []string `yaml:"responsibilities" json:"responsibilities"`
 }
