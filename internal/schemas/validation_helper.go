@@ -27,6 +27,14 @@ func isEmpty(val reflect.Value) bool {
 	}
 }
 
+func GroupByKind(flaws []ValidationFlaw) map[string][]string {
+	grouped := make(map[string][]string)
+	for _, f := range flaws {
+		grouped[f.kind] = append(grouped[f.kind], f.name)
+	}
+	return grouped
+}
+
 func ValidateFields(s interface{}) []ValidationFlaw {
 	var validation_flaws []ValidationFlaw
 	val := reflect.ValueOf(s)
@@ -53,7 +61,7 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 		if validate_tag == "required" && isEmpty(field) {
 			validation_flaws = append(validation_flaws,
 				ValidationFlaw{
-					"validation_flaws",
+					"required",
 					fieldType.Name,
 				})
 		}
@@ -65,7 +73,7 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 			}
 			if field.Len() > converted_max_len {
 				validation_flaws = append(validation_flaws, ValidationFlaw{
-					"too long",
+					"length of variable",
 					fieldType.Name,
 				})
 			}
@@ -75,7 +83,7 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 			for _, n := range nested {
 				validation_flaws = append(validation_flaws,
 					ValidationFlaw{
-						"validation_flaws",
+						n.kind,
 						fieldType.Name + "." + n.name,
 					})
 			}
@@ -91,7 +99,7 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 					for _, n := range nested {
 						validation_flaws = append(validation_flaws,
 							ValidationFlaw{
-								"validation_flaws",
+								n.kind,
 								fieldType.Name + fmt.Sprintf("[%d].%s", j, n),
 							})
 					}

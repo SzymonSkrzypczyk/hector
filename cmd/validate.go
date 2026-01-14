@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"hector/internal/parser"
+	"hector/internal/schemas"
 	valtheme "hector/internal/theme"
 	"log"
 )
@@ -33,9 +34,13 @@ var validateCmd = &cobra.Command{
 		if isCorrect {
 			log.Println("Validation successful: No flaws detected.")
 		} else {
-			log.Println("Validation failed: Missing required fields:")
-			for _, field := range missing {
-				log.Printf("\t- %s\n", field)
+			log.Println("Validation failed:")
+			grouped := schemas.GroupByKind(missing)
+			for kind, fields := range grouped {
+				log.Printf("\t%s:\n", kind)
+				for _, field := range fields {
+					log.Printf("\t\t- %s\n", field)
+				}
 			}
 		}
 
