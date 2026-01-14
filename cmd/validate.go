@@ -37,9 +37,9 @@ var validateCmd = &cobra.Command{
 			log.Println("Validation failed:")
 			grouped := schemas.GroupByKind(missing)
 			for kind, fields := range grouped {
-				log.Printf("\t%s:\n", kind)
+				log.Printf("\t- %s:\n", kind)
 				for _, field := range fields {
-					log.Printf("\t\t- %s\n", field)
+					log.Printf("\t\t* %s\n", field)
 				}
 			}
 		}

@@ -4,7 +4,14 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"regexp"
 	"strconv"
+	"strings"
+)
+
+const (
+	phoneField = "phone"
+	emailField = "email"
 )
 
 type ValidationFlaw struct {
@@ -25,6 +32,16 @@ func isEmpty(val reflect.Value) bool {
 	default:
 		return false
 	}
+}
+
+func ValidatePhone(phoneNumber string) bool {
+	re := regexp.MustCompile(`^\+?[1-9]\d{1,14}$`)
+	return re.MatchString(phoneNumber)
+}
+
+func ValidateEmail(email string) bool {
+	re := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+	return re.MatchString(email)
 }
 
 func GroupByKind(flaws []ValidationFlaw) map[string][]string {
@@ -71,13 +88,33 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 			if err != nil {
 				log.Fatal(err)
 			}
-			if field.Len() > converted_max_len {
+
+			if field.Kind() == reflect.String && field.Len() > converted_max_len {
 				validation_flaws = append(validation_flaws, ValidationFlaw{
-					"length of variable",
+					"max_len",
 					fieldType.Name,
 				})
 			}
 		}
+
+		if strings.Contains(strings.ToLower(fieldType.Name), phoneField) {
+			if !ValidatePhone(field.String()) {
+				validation_flaws = append(validation_flaws, ValidationFlaw{
+					"wrong_format",
+					fieldType.Name,
+				})
+			}
+		}
+
+		if strings.Contains(strings.ToLower(fieldType.Name), emailField) {
+			if !ValidateEmail(field.String()) {
+				validation_flaws = append(validation_flaws, ValidationFlaw{
+					"wrong_format",
+					fieldType.Name,
+				})
+			}
+		}
+
 		if field.Kind() == reflect.Struct || (field.Kind() == reflect.Ptr && !field.IsNil()) {
 			nested := ValidateFields(field.Interface())
 			for _, n := range nested {
