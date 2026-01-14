@@ -50,8 +50,8 @@ type NormalCandidateInfo struct {
 }
 
 type NormalContact struct {
-	Email string `yaml:"email" json:"email" validate:"required" max_len:"100"`
-	Phone string `yaml:"phone" json:"phone" max_len:"20"`
+	Email string `yaml:"email" json:"email" validate:"required" max_len:"100" expected_regex:"^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"`
+	Phone string `yaml:"phone" json:"phone" max_len:"20" expected_regex:"^\\+?[1-9]\\d{1,14}$"`
 }
 
 type NormalLanguage struct {

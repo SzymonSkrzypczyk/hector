@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 const (
@@ -74,6 +73,7 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 		fieldType := typ.Field(i)
 		validate_tag := fieldType.Tag.Get("validate")
 		max_len_tag := fieldType.Tag.Get("max_len")
+		regexTag := fieldType.Tag.Get("expected_regex")
 
 		if validate_tag == "required" && isEmpty(field) {
 			validation_flaws = append(validation_flaws,
@@ -97,17 +97,9 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 			}
 		}
 
-		if strings.Contains(strings.ToLower(fieldType.Name), phoneField) {
-			if !ValidatePhone(field.String()) {
-				validation_flaws = append(validation_flaws, ValidationFlaw{
-					"wrong_format",
-					fieldType.Name,
-				})
-			}
-		}
-
-		if strings.Contains(strings.ToLower(fieldType.Name), emailField) {
-			if !ValidateEmail(field.String()) {
+		if regexTag != "" && field.Kind() == reflect.String {
+			re := regexp.MustCompile(regexTag)
+			if !re.MatchString(field.String()) {
 				validation_flaws = append(validation_flaws, ValidationFlaw{
 					"wrong_format",
 					fieldType.Name,
