@@ -41,7 +41,7 @@ func TestValidateRequiredFields(t *testing.T) {
 					City: "NY",
 				},
 			},
-			expected: nil,
+			expected: []string{}, // empty slice instead of nil
 		},
 		{
 			name: "Missing root field",
@@ -85,11 +85,17 @@ func TestValidateRequiredFields(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ValidateFields(tt.input)
-			if !reflect.DeepEqual(got, tt.expected) {
-				if len(got) == 0 && len(tt.expected) == 0 {
-					return
-				}
-				t.Errorf("ValidateFields() = %v, want %v", got, tt.expected)
+			gotNames := []string{}
+			for _, f := range got {
+				gotNames = append(gotNames, f.name)
+			}
+
+			if gotNames == nil {
+				gotNames = []string{}
+			}
+
+			if !reflect.DeepEqual(gotNames, tt.expected) {
+				t.Errorf("ValidateFields() = %v, want %v", gotNames, tt.expected)
 			}
 		})
 	}

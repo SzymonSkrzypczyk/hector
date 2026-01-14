@@ -12,10 +12,10 @@ type MockSchema struct {
 	Description string `yaml:"description"`
 }
 
-func (m *MockSchema) ThemeName() string                   { return "mock" }
-func (m *MockSchema) TemplateDetails() schemas.FileSchema { return schemas.FileSchema{} }
-func (m *MockSchema) PDFDetails() schemas.PDFSchema       { return schemas.PDFSchema{} }
-func (m MockSchema) Validate() (bool, []string)           { return true, nil }
+func (m *MockSchema) ThemeName() string                         { return "mock" }
+func (m *MockSchema) TemplateDetails() schemas.FileSchema       { return schemas.FileSchema{} }
+func (m *MockSchema) PDFDetails() schemas.PDFSchema             { return schemas.PDFSchema{} }
+func (m MockSchema) Validate() (bool, []schemas.ValidationFlaw) { return true, nil }
 
 func TestParse(t *testing.T) {
 	content := []byte(`
