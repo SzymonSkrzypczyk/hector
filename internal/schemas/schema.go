@@ -4,7 +4,7 @@ type ThemeSchema interface {
 	ThemeName() string
 	TemplateDetails() FileSchema
 	PDFDetails() PDFSchema
-	Validate() (bool, []string)
+	Validate() (bool, []ValidationFlaw)
 }
 
 type FileSchema struct {

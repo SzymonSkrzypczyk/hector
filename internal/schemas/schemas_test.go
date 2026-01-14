@@ -84,12 +84,12 @@ func TestValidateRequiredFields(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ValidateRequiredFields(tt.input)
+			got := ValidateFields(tt.input)
 			if !reflect.DeepEqual(got, tt.expected) {
 				if len(got) == 0 && len(tt.expected) == 0 {
 					return
 				}
-				t.Errorf("ValidateRequiredFields() = %v, want %v", got, tt.expected)
+				t.Errorf("ValidateFields() = %v, want %v", got, tt.expected)
 			}
 		})
 	}

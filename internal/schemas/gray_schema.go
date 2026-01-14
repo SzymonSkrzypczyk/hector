@@ -34,8 +34,8 @@ func (Gray) PDFDetails() PDFSchema {
 	}
 }
 
-func (g *Gray) Validate() (bool, []string) {
-	missingFields := ValidateRequiredFields(g)
+func (g *Gray) Validate() (bool, []ValidationFlaw) {
+	missingFields := ValidateFields(g)
 
 	if len(missingFields) > 0 {
 		return false, missingFields
@@ -45,15 +45,15 @@ func (g *Gray) Validate() (bool, []string) {
 }
 
 type GrayCandidateInfo struct {
-	Name  string `yaml:"name" json:"name" validate:"required"`
-	Title string `yaml:"title" json:"title"`
-	About string `yaml:"about" json:"about" validate:"required"`
+	Name  string `yaml:"name" json:"name" validate:"required" max_len:"100"`
+	Title string `yaml:"title" json:"title" max_len:"100"`
+	About string `yaml:"about" json:"about" validate:"required" max_len:"255"`
 }
 
 type GrayContact struct {
-	Email   string `yaml:"email" json:"email" validate:"required"`
-	Phone   string `yaml:"phone" json:"phone"`
-	Address string `yaml:"address" json:"address"` // Added Address field
+	Email   string `yaml:"email" json:"email" validate:"required" max_len:"100"`
+	Phone   string `yaml:"phone" json:"phone" max_len:"20"`
+	Address string `yaml:"address" json:"address" max_len:"100"` // Added Address field
 }
 
 type GrayLanguage struct {
@@ -62,14 +62,14 @@ type GrayLanguage struct {
 }
 
 type GrayEducation struct {
-	Institution string   `yaml:"institution" json:"institution"`
+	Institution string   `yaml:"institution" json:"institution" max_len:"70"`
 	Degree      string   `yaml:"degree" json:"degree"`
 	Dates       string   `yaml:"dates" json:"dates"` // Mapped to 'dates' from YAML
 	Details     []string `yaml:"details" json:"details"`
 }
 
 type GrayExperience struct {
-	Role             string   `yaml:"role" json:"role"`
+	Role             string   `yaml:"role" json:"role" max_len:"40"`
 	Company          string   `yaml:"company" json:"company"`
 	Dates            string   `yaml:"dates" json:"dates"` // Mapped to 'dates' from YAML
 	Responsibilities []string `yaml:"responsibilities" json:"responsibilities"`

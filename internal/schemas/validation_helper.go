@@ -2,8 +2,15 @@ package schemas
 
 import (
 	"fmt"
+	"log"
 	"reflect"
+	"strconv"
 )
+
+type ValidationFlaw struct {
+	kind string
+	name string
+}
 
 func isEmpty(val reflect.Value) bool {
 	switch val.Kind() {
@@ -20,19 +27,19 @@ func isEmpty(val reflect.Value) bool {
 	}
 }
 
-func ValidateRequiredFields(s interface{}) []string {
-	var missing []string
+func ValidateFields(s interface{}) []ValidationFlaw {
+	var validation_flaws []ValidationFlaw
 	val := reflect.ValueOf(s)
 
 	if val.Kind() == reflect.Ptr {
 		if val.IsNil() {
-			return missing
+			return validation_flaws
 		}
 		val = val.Elem()
 	}
 
 	if val.Kind() != reflect.Struct {
-		return missing
+		return validation_flaws
 	}
 
 	typ := val.Type()
@@ -40,16 +47,37 @@ func ValidateRequiredFields(s interface{}) []string {
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)
 		fieldType := typ.Field(i)
-		tag := fieldType.Tag.Get("validate")
+		validate_tag := fieldType.Tag.Get("validate")
+		max_len_tag := fieldType.Tag.Get("max_len")
 
-		if tag == "required" && isEmpty(field) {
-			missing = append(missing, fieldType.Name)
+		if validate_tag == "required" && isEmpty(field) {
+			validation_flaws = append(validation_flaws,
+				ValidationFlaw{
+					"validation_flaws",
+					fieldType.Name,
+				})
 		}
 
+		if max_len_tag != "" {
+			converted_max_len, err := strconv.Atoi(max_len_tag)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if field.Len() > converted_max_len {
+				validation_flaws = append(validation_flaws, ValidationFlaw{
+					"too long",
+					fieldType.Name,
+				})
+			}
+		}
 		if field.Kind() == reflect.Struct || (field.Kind() == reflect.Ptr && !field.IsNil()) {
-			nested := ValidateRequiredFields(field.Interface())
+			nested := ValidateFields(field.Interface())
 			for _, n := range nested {
-				missing = append(missing, fieldType.Name+"."+n)
+				validation_flaws = append(validation_flaws,
+					ValidationFlaw{
+						"validation_flaws",
+						fieldType.Name + "." + n.name,
+					})
 			}
 		}
 
@@ -59,14 +87,18 @@ func ValidateRequiredFields(s interface{}) []string {
 			// Allow recursion if slice contains Structs OR Pointers
 			if elemKind == reflect.Struct || elemKind == reflect.Ptr {
 				for j := 0; j < field.Len(); j++ {
-					nested := ValidateRequiredFields(field.Index(j).Interface())
+					nested := ValidateFields(field.Index(j).Interface())
 					for _, n := range nested {
-						missing = append(missing, fieldType.Name+fmt.Sprintf("[%d].%s", j, n))
+						validation_flaws = append(validation_flaws,
+							ValidationFlaw{
+								"validation_flaws",
+								fieldType.Name + fmt.Sprintf("[%d].%s", j, n),
+							})
 					}
 				}
 			}
 		}
 	}
 
-	return missing
+	return validation_flaws
 }

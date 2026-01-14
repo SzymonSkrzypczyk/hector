@@ -31,7 +31,7 @@ var validateCmd = &cobra.Command{
 		isCorrect, missing := exampleStruct.Validate()
 
 		if isCorrect {
-			log.Println("Validation successful: All required fields are present.")
+			log.Println("Validation successful: No flaws detected.")
 		} else {
 			log.Println("Validation failed: Missing required fields:")
 			for _, field := range missing {
