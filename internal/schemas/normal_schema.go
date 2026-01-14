@@ -34,8 +34,8 @@ func (Normal) PDFDetails() PDFSchema {
 	}
 }
 
-func (n *Normal) Validate() (bool, []string) {
-	missingFields := ValidateRequiredFields(n)
+func (n *Normal) Validate() (bool, []ValidationFlaw) {
+	missingFields := ValidateFields(n)
 
 	if len(missingFields) > 0 {
 		return false, missingFields
@@ -45,13 +45,13 @@ func (n *Normal) Validate() (bool, []string) {
 }
 
 type NormalCandidateInfo struct {
-	Name  string `yaml:"name" json:"name" validate:"required"`
-	About string `yaml:"about" json:"about" validate:"required"`
+	Name  string `yaml:"name" json:"name" validate:"required" max_len:"100"`
+	About string `yaml:"about" json:"about" validate:"required" max_len:"255"`
 }
 
 type NormalContact struct {
-	Email string `yaml:"email" json:"email" validate:"required"`
-	Phone string `yaml:"phone" json:"phone"`
+	Email string `yaml:"email" json:"email" validate:"required" max_len:"100" expected_regex:"^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"`
+	Phone string `yaml:"phone" json:"phone" max_len:"20" expected_regex:"^\\+?[1-9]\\d{1,14}$"`
 }
 
 type NormalLanguage struct {
@@ -60,15 +60,15 @@ type NormalLanguage struct {
 }
 
 type NormalEducation struct {
-	Institution string   `yaml:"institution" json:"institution"`
+	Institution string   `yaml:"institution" json:"institution" max_len:"70"`
 	Degree      string   `yaml:"degree" json:"degree"`
-	Dates       string   `yaml:"period" json:"period"`
+	Dates       string   `yaml:"period" json:"period" validate:"date"`
 	Details     []string `yaml:"details" json:"details"`
 }
 
 type NormalExperience struct {
-	Role             string   `yaml:"role" json:"role"`
+	Role             string   `yaml:"role" json:"role" max_len:"40"`
 	Company          string   `yaml:"company" json:"company"`
-	Dates            string   `yaml:"period" json:"period"`
+	Dates            string   `yaml:"period" json:"period" validate:"date"`
 	Responsibilities []string `yaml:"responsibilities" json:"responsibilities"`
 }

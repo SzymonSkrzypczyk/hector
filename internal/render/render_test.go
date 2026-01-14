@@ -13,11 +13,13 @@ type MockTheme struct {
 	Photo string
 }
 
-func (m *MockTheme) Validate() (bool, []string) {
+// Correct Validate() signature to match schemas.ThemeSchema
+func (m *MockTheme) Validate() (bool, []schemas.ValidationFlaw) {
 	return true, nil
 }
 
 func (m *MockTheme) ThemeName() string { return "mock_theme" }
+
 func (m *MockTheme) TemplateDetails() schemas.FileSchema {
 	return schemas.FileSchema{
 		ThemeDirectory: "mock_theme",
@@ -25,6 +27,7 @@ func (m *MockTheme) TemplateDetails() schemas.FileSchema {
 		CSSFile:        "style.css",
 	}
 }
+
 func (m *MockTheme) PDFDetails() schemas.PDFSchema { return schemas.PDFSchema{} }
 
 func TestRender(t *testing.T) {
@@ -37,6 +40,7 @@ func TestRender(t *testing.T) {
 		os.RemoveAll(outputDir)
 	}()
 
+	// Prepare mock theme files
 	err := os.MkdirAll(themeDir, 0755)
 	if err != nil {
 		t.Fatalf("Failed to create mock theme dir: %v", err)
