@@ -11,13 +11,35 @@ import (
 )
 
 const (
-	phoneField = "phone"
-	emailField = "email"
+	explanationInvalidPeriod = "Use the format “January 2006 - January 2006” or “January 2006 - Onwards”."
+	explanationRequired      = "Provide a value for this field."
+	explanationMaxLen        = "Shorten the value to fit the maximum allowed length."
+	explanationWrongFormat   = "Enter the value in the correct format."
+	explanationChronological = "Reorder the entries so dates are in chronological order."
+	explanationDuplicate     = "Remove or adjust duplicate values."
+)
+
+const (
+	reasonRequired         = "This field is required and cannot be empty."
+	reasonMaxLenExceeded   = "The value is too long."
+	reasonWrongFormat      = "This value doesn’t match the expected format."
+	reasonInvalidPeriod    = "This period is not valid."
+	reasonStartAfterEnd    = "The start date occurs after the end date."
+	reasonNotChronological = "This entry starts earlier than the previous one."
+	reasonDuplicateEntry   = "This value is duplicated."
 )
 
 type ValidationFlaw struct {
-	kind string
-	name string
+	kind       string
+	name       string
+	reason     string
+	suggestion string
+}
+
+type GroupedResult struct {
+	Name       string
+	Reason     string
+	Suggestion string
 }
 
 func isEmpty(val reflect.Value) bool {
@@ -75,6 +97,8 @@ func validateChronologicalPeriods(periods []string) []ValidationFlaw {
 				ValidationFlaw{
 					"invalid_period",
 					fmt.Sprintf("period[%d]", i),
+					err.Error(),
+					explanationInvalidPeriod,
 				})
 			continue
 		}
@@ -84,6 +108,8 @@ func validateChronologicalPeriods(periods []string) []ValidationFlaw {
 				ValidationFlaw{
 					"invalid_period",
 					fmt.Sprintf("period[%d] (start after end)", i),
+					reasonStartAfterEnd,
+					explanationInvalidPeriod,
 				})
 		}
 
@@ -92,6 +118,8 @@ func validateChronologicalPeriods(periods []string) []ValidationFlaw {
 				ValidationFlaw{
 					"not_chronological",
 					fmt.Sprintf("period[%d] (earlier than previous element)", i),
+					reasonNotChronological,
+					explanationChronological,
 				})
 		}
 
@@ -119,10 +147,10 @@ func checkDuplicates(slice reflect.Value) []string {
 	return duplicates
 }
 
-func GroupByKind(flaws []ValidationFlaw) map[string][]string {
-	grouped := make(map[string][]string)
+func GroupByKind(flaws []ValidationFlaw) map[string][]GroupedResult {
+	grouped := make(map[string][]GroupedResult)
 	for _, f := range flaws {
-		grouped[f.kind] = append(grouped[f.kind], f.name)
+		grouped[f.kind] = append(grouped[f.kind], GroupedResult{f.name, f.reason, f.suggestion})
 	}
 	return grouped
 }
@@ -157,6 +185,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 				ValidationFlaw{
 					"required",
 					fieldType.Name,
+					reasonRequired,
+					explanationRequired,
 				})
 		}
 
@@ -171,6 +201,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 				validationFlaws = append(validationFlaws, ValidationFlaw{
 					"max_len",
 					fieldType.Name,
+					reasonMaxLenExceeded,
+					explanationMaxLen,
 				})
 			}
 		}
@@ -182,6 +214,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 				validationFlaws = append(validationFlaws, ValidationFlaw{
 					"wrong_format",
 					fieldType.Name,
+					reasonWrongFormat,
+					explanationWrongFormat,
 				})
 			}
 		}
@@ -194,6 +228,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 					ValidationFlaw{
 						n.kind,
 						fieldType.Name + "." + n.name,
+						n.reason,
+						n.suggestion,
 					})
 			}
 		}
@@ -216,6 +252,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 							ValidationFlaw{
 								n.kind,
 								fieldType.Name + fmt.Sprintf("[%d].%s", j, n.name),
+								n.reason,
+								n.suggestion,
 							})
 					}
 
@@ -231,6 +269,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 										ValidationFlaw{
 											"invalid_period",
 											fieldType.Name + fmt.Sprintf("[%d].%s", j, subFieldType.Name),
+											reasonInvalidPeriod,
+											explanationInvalidPeriod,
 										})
 									continue
 								}
@@ -239,6 +279,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 										ValidationFlaw{
 											"not_chronological",
 											fieldType.Name + fmt.Sprintf("[%d].%s", j, subFieldType.Name),
+											reasonNotChronological,
+											explanationChronological,
 										})
 								}
 								prevStart = start
@@ -255,6 +297,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 						ValidationFlaw{
 							"duplicate_entry",
 							fieldType.Name + " (duplicate: " + d + ")",
+							reasonDuplicateEntry,
+							explanationDuplicate,
 						})
 				}
 			}
@@ -268,6 +312,8 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 					ValidationFlaw{
 						f.kind,
 						fieldType.Name,
+						f.reason,
+						f.suggestion,
 					})
 			}
 		}
