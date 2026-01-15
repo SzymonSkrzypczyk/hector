@@ -25,8 +25,14 @@ jobs:
           go-version: 'stable'
 
       - name: Go format
+        shell: bash
         run: |
-          test -z "$(gofmt -s -l .)"
+          files=$(gofmt -s -l .)
+          if [ -n "$files" ]; then
+          echo "The following files are not formatted:"
+          echo "$files"
+          exit 1
+          fi
 
       - name: Go vet
         run: go vet ./...
