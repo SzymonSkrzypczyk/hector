@@ -8,8 +8,6 @@ import (
 	"hector/internal/theme"
 )
 
-// it will be hardcoded for now to use normal schema
-// ultimately it will be passed by CLI arg
 const (
 	defaultOutputDirectory = "output/"
 )

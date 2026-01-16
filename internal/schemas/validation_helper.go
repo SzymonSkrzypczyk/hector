@@ -175,12 +175,12 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)
 		fieldType := typ.Field(i)
-		validate_tag := fieldType.Tag.Get("validate")
-		max_len_tag := fieldType.Tag.Get("max_len")
+		validateTag := fieldType.Tag.Get("validate")
+		maxLenTag := fieldType.Tag.Get("max_len")
 		regexTag := fieldType.Tag.Get("expected_regex")
 
 		// Required field check
-		if validate_tag == "required" && isEmpty(field) {
+		if validateTag == "required" && isEmpty(field) {
 			validationFlaws = append(validationFlaws,
 				ValidationFlaw{
 					"required",
@@ -191,13 +191,13 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 		}
 
 		// Max length check
-		if max_len_tag != "" {
-			converted_max_len, err := strconv.Atoi(max_len_tag)
+		if maxLenTag != "" {
+			convertedMaxLen, err := strconv.Atoi(maxLenTag)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			if field.Kind() == reflect.String && field.Len() > converted_max_len {
+			if field.Kind() == reflect.String && field.Len() > convertedMaxLen {
 				validationFlaws = append(validationFlaws, ValidationFlaw{
 					"max_len",
 					fieldType.Name,
@@ -305,7 +305,7 @@ func ValidateFields(s interface{}) []ValidationFlaw {
 		}
 
 		// Also check if the current field itself is tagged with "date" and is a string
-		if validate_tag == "date" && field.Kind() == reflect.String {
+		if validateTag == "date" && field.Kind() == reflect.String {
 			dateFlaws := validateChronologicalPeriods([]string{field.String()})
 			for _, f := range dateFlaws {
 				validationFlaws = append(validationFlaws,

@@ -34,13 +34,23 @@ func copyAsset(srcPath, outputDir string) error {
 	if err != nil {
 		return fmt.Errorf("asset not found: %s", absSrc)
 	}
-	defer in.Close()
+	defer func(in *os.File) {
+		err := in.Close()
+		if err != nil {
+
+		}
+	}(in)
 
 	out, err := os.Create(dst)
 	if err != nil {
 		return fmt.Errorf("failed to create destination file %s: %v", dst, err)
 	}
-	defer out.Close()
+	defer func(out *os.File) {
+		err := out.Close()
+		if err != nil {
+
+		}
+	}(out)
 
 	if _, err := io.Copy(out, in); err != nil {
 		return fmt.Errorf("failed to copy asset from %s to %s: %v", absSrc, dst, err)
@@ -105,7 +115,12 @@ func Render(values schemas.ThemeSchema) string {
 	if err != nil {
 		log.Fatalf("warning: could not open theme style.css (%s): %v", cssFile, err)
 	} else {
-		defer src.Close()
+		defer func(src *os.File) {
+			err := src.Close()
+			if err != nil {
+
+			}
+		}(src)
 		dstPath := filepath.Join(outputDirectory, details.CSSFile)
 		dst, err := os.Create(dstPath)
 		if err != nil {
