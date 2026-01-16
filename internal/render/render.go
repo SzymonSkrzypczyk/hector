@@ -37,7 +37,7 @@ func copyAsset(srcPath, outputDir string) error {
 	defer func(in *os.File) {
 		err := in.Close()
 		if err != nil {
-
+			log.Fatalln(err)
 		}
 	}(in)
 
@@ -48,7 +48,7 @@ func copyAsset(srcPath, outputDir string) error {
 	defer func(out *os.File) {
 		err := out.Close()
 		if err != nil {
-
+			log.Fatalln(err)
 		}
 	}(out)
 
@@ -118,7 +118,7 @@ func Render(values schemas.ThemeSchema) string {
 		defer func(src *os.File) {
 			err := src.Close()
 			if err != nil {
-
+				log.Fatalln(err)
 			}
 		}(src)
 		dstPath := filepath.Join(outputDirectory, details.CSSFile)

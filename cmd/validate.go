@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"hector/internal/parser"
 	"hector/internal/schemas"
 	valtheme "hector/internal/theme"
@@ -20,7 +22,8 @@ var (
 )
 
 func humanizeKind(kind string) string {
-	return strings.Title(strings.ReplaceAll(kind, "_", " "))
+	c := cases.Title(language.Und)
+	return c.String(strings.ReplaceAll(kind, "_", " "))
 }
 
 func humanizeFieldPath(path string) string {
@@ -85,5 +88,8 @@ func init() {
 		"Template to validate against",
 	)
 
-	validateCmd.MarkFlagRequired("data")
+	err := validateCmd.MarkFlagRequired("data")
+	if err != nil {
+		log.Fataln(err)
+	}
 }

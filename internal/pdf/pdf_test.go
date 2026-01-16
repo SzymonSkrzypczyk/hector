@@ -2,6 +2,7 @@ package pdf
 
 import (
 	"hector/internal/schemas"
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -49,10 +50,16 @@ func TestClearOutputDirectory(t *testing.T) {
 	dir := t.TempDir()
 
 	// Create a .pdf file (should stay)
-	os.WriteFile(filepath.Join(dir, "keep.pdf"), []byte("data"), 0644)
+	err := os.WriteFile(filepath.Join(dir, "keep.pdf"), []byte("data"), 0644)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// Create a .html file (should be removed)
-	os.WriteFile(filepath.Join(dir, "remove.html"), []byte("data"), 0644)
+	err = os.WriteFile(filepath.Join(dir, "remove.html"), []byte("data"), 0644)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	clearOutputDirectory(dir)
 
