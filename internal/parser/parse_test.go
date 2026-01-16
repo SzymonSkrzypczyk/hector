@@ -26,6 +26,7 @@ description: Software Engineer
 	if err != nil {
 		t.Fatal(err)
 	}
+	fmt.Println("Hello")
 	defer os.Remove(tmpFile.Name()) // Clean up
 
 	if _, err := tmpFile.Write(content); err != nil {
