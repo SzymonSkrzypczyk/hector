@@ -90,6 +90,6 @@ func init() {
 
 	err := validateCmd.MarkFlagRequired("data")
 	if err != nil {
-		log.Fataln(err)
+		log.Fatalln(err)
 	}
 }
