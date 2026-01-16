@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"hector/internal/pipeline"
+	"log"
 )
 
 var (
@@ -46,6 +47,9 @@ func init() {
 		"Output directory",
 	)
 
-	// 👇 make --data required
-	generateCmd.MarkFlagRequired("data")
+	// make --data required
+	err := generateCmd.MarkFlagRequired("data")
+	if err != nil {
+		log.Fatal(err)
+	}
 }

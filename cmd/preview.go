@@ -36,10 +36,7 @@ func openBrowser(path string) error {
 }
 
 func checkDataChanged(originalChanges, comparedChanges string) bool {
-	if originalChanges != comparedChanges {
-		return true
-	}
-	return false
+	return originalChanges != comparedChanges
 }
 
 var previewCmd = &cobra.Command{
