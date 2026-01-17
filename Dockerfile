@@ -18,4 +18,4 @@ COPY --from=builder /app/hector .
 COPY --from=builder /app/themes ./themes
 COPY --from=builder /app/examples ./examples
 
-CMD ["./hector"]
+ENTRYPOINT ["./hector"]
