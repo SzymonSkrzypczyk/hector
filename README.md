@@ -39,3 +39,9 @@ The project is structured as follows:
 - 📁 [`internal/schemas`](internal/schemas/): Package for defining CV data schemas.
 - 📁 [`internal/theme`](internal/theme/): Package for managing CV themes.
 - 📝 [`main.go`](main.go): The entry point of the application.
+
+## Documents
+- [`CHANGELOG.md`](docs/CHANGELOG.md): Changelog of the project.
+- [`CODE_OF_CONDUCT.md`](docs/CODE_OF_CONDUCT.md): Code of conduct for the project.
+- [`USER_GUIDE.md`](docs/USER_GUIDE.md): User guide for the project.
+- [`CONTRIBUTING.md`](docs/CONTRIBUTING.md): Contributing guide for the project.
