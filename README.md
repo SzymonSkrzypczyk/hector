@@ -21,6 +21,22 @@ Build go project
 go build
 ```
 
+Alternatively you can use `task` to build the project.
+First install task from [here](https://taskfile.dev/installation/).
+Then run:
+```bash
+task build
+```
+To run tests:
+```bash
+task test
+```
+To clean up:
+```bash
+task clean
+```
+
+
 ## Get help
 To see the available commands and options, run:
 ```bash
