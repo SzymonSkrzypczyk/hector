@@ -1,0 +1,64 @@
+version: '3'
+
+vars:
+  BINARY_NAME: hector
+  MAIN_FILE: main.go
+
+tasks:
+  default:
+    desc: Run test and build
+    cmds:
+      - task: test
+      - task: build
+
+  build:
+    desc: Build the binary
+    cmds:
+      - go build -o {{.BINARY_NAME}} -v {{.MAIN_FILE}}
+    sources:
+      - ./**/*.go
+    generates:
+      - ./{{.BINARY_NAME}}
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v ./...
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - go clean
+      - cmd: rm -f {{.BINARY_NAME}}
+        ignore_error: true
+
+  run:
+    desc: Build and run the binary
+    deps: [build]
+    cmds:
+      - ./{{.BINARY_NAME}}
+
+  deps:
+    desc: Download dependencies
+    cmds:
+      - go mod download
+
+  tidy:
+    desc: Tidy dependencies
+    cmds:
+      - go mod tidy
+
+  get:
+    desc: Get dependencies
+    cmds:
+      - go get ./...
+
+  lint:
+    desc: Run linters
+    cmds:
+      - golangci-lint run
+
+  vet:
+    desc: Run go vet
+    cmds:
+      - go vet ./...
