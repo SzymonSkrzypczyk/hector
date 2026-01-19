@@ -17,7 +17,6 @@ builds:
 
 archives:
   - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -34,7 +33,7 @@ checksum:
   name_template: 'checksums.txt'
 
 snapshot:
-  version_template: "{{ .Tag }}-next"
+  version_template: "{{ .ProjectName }}-next"
 
 changelog:
   sort: asc
@@ -42,3 +41,28 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+
+brews:
+  - repository:
+      owner: SzymonSkrzypczyk
+      name: homebrew-hector
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+    
+    url_template: "https://github.com/SzymonSkrzypczyk/hector/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    commit_author:
+      name: Szymon Skrzypczyk
+      email: szymon.skrzypczyk@vp.pl
+
+    homepage: "https://github.com/SzymonSkrzypczyk/hector"
+    description: "Hector is a static CV generator that allows users to create professional CVs using predefined themes and structured data files."
+    license: "MIT"
+
+    folder: Formula
+
+release:
+  github:
+    owner: SzymonSkrzypczyk
+    name: hector
+  draft: false
+  prerelease: auto
