@@ -24,7 +24,7 @@ jobs:
       # PR: only new issues
       - name: Lint (PR – new issues only)
         if: github.event_name == 'pull_request'
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
           version: latest
           args: >
@@ -34,7 +34,7 @@ jobs:
       # Push: full lint
       - name: Lint (push – full)
         if: github.event_name == 'push'
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
           version: latest
           args: >
