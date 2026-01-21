@@ -10,9 +10,7 @@ linters:
     - govet
     - staticcheck
     - errcheck
-    - gosimple
     - ineffassign
-    - unused
   settings:
     revive:
       severity: warning
