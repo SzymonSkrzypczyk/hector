@@ -97,7 +97,7 @@ func Render(values schemas.ThemeSchema) string {
 
 	dir, err := os.ReadDir(outputDirectory)
 	if err != nil || dir == nil {
-		err := os.MkdirAll(outputDirectory, os.ModePerm)
+		err := os.MkdirAll(outputDirectory, 0750)
 		if err != nil {
 			log.Fatalf("Failed to create output directory: %s", err)
 		}
@@ -146,7 +146,7 @@ func Render(values schemas.ThemeSchema) string {
 				log.Fatalln(err)
 			}
 		}(src)
-		
+
 		dstRoot, err := os.OpenRoot(outputDirectory)
 		if err != nil {
 			log.Fatalf("warning: could not open output directory (%s): %v", outputDirectory, err)

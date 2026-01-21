@@ -26,7 +26,7 @@ func renderTemplate(theme string, outputFile string) error {
 		return fmt.Errorf("failed to open themes directory: %w", err)
 	}
 	defer themesRoot.Close()
-	
+
 	src, err := themesRoot.Open(filepath.Join(theme, "template.yaml"))
 	if err != nil {
 		return fmt.Errorf("failed to open template %q: %w", filepath.Join("themes", theme, "template.yaml"), err)
@@ -39,13 +39,13 @@ func renderTemplate(theme string, outputFile string) error {
 	} else {
 		dir := filepath.Dir(outputFile)
 		base := filepath.Base(outputFile)
-		
+
 		outRoot, err := os.OpenRoot(dir)
 		if err != nil {
 			return fmt.Errorf("failed to open output directory %q: %w", dir, err)
 		}
 		defer outRoot.Close()
-		
+
 		file, err := outRoot.Create(base)
 		if err != nil {
 			return fmt.Errorf("failed to create output file %q: %w", outputFile, err)
