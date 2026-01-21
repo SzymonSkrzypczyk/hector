@@ -12,9 +12,7 @@ linters:
     - errcheck
     - gosimple
     - ineffassign
-    - typecheck
     - unused
-
-linters-settings:
-  revive:
-    severity: warning
+  settings:
+    revive:
+      severity: warning

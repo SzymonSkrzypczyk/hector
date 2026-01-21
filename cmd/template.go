@@ -19,11 +19,17 @@ func renderTemplate(theme string, outputFile string) error {
 		return fmt.Errorf("theme must be specified")
 	}
 
-	templatePath := filepath.Join("themes", theme, "template.yaml")
-
-	src, err := os.Open(templatePath)
+	// templatePath is filepath.Join("themes", theme, "template.yaml")
+	// Scope access to "themes" directory
+	themesRoot, err := os.OpenRoot("themes")
 	if err != nil {
-		return fmt.Errorf("failed to open template %q: %w", templatePath, err)
+		return fmt.Errorf("failed to open themes directory: %w", err)
+	}
+	defer themesRoot.Close()
+
+	src, err := themesRoot.Open(filepath.Join(theme, "template.yaml"))
+	if err != nil {
+		return fmt.Errorf("failed to open template %q: %w", filepath.Join("themes", theme, "template.yaml"), err)
 	}
 	defer src.Close()
 
@@ -31,7 +37,16 @@ func renderTemplate(theme string, outputFile string) error {
 	if outputFile == "" {
 		dst = os.Stdout
 	} else {
-		file, err := os.Create(outputFile)
+		dir := filepath.Dir(outputFile)
+		base := filepath.Base(outputFile)
+
+		outRoot, err := os.OpenRoot(dir)
+		if err != nil {
+			return fmt.Errorf("failed to open output directory %q: %w", dir, err)
+		}
+		defer outRoot.Close()
+
+		file, err := outRoot.Create(base)
 		if err != nil {
 			return fmt.Errorf("failed to create output file %q: %w", outputFile, err)
 		}

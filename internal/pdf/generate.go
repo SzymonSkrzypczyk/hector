@@ -30,7 +30,7 @@ func clearOutputDirectory(outputDirectory string) {
 }
 
 func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory string) {
-	if err := os.MkdirAll(outputDirectory, 0755); err != nil {
+	if err := os.MkdirAll(outputDirectory, 0750); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -79,7 +79,7 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory 
 		log.Fatalln("Failed to read PDF stream:", err)
 	}
 
-	if err := os.WriteFile(targetFile, pdfData, 0644); err != nil {
+	if err := os.WriteFile(targetFile, pdfData, 0600); err != nil {
 		log.Fatalln("Failed to save PDF file:", err)
 	}
 
