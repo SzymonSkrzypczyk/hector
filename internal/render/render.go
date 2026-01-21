@@ -24,13 +24,20 @@ func copyAsset(srcPath, outputDir string) error {
 		return err
 	}
 
-	if _, err := os.Stat(absSrc); err != nil {
+	srcDir := filepath.Dir(absSrc)
+	srcFile := filepath.Base(absSrc)
+
+	rootDir, err := os.OpenRoot(srcDir)
+	if err != nil {
+		return fmt.Errorf("failed to open source directory %s: %v", srcDir, err)
+	}
+	defer rootDir.Close()
+
+	if _, err := rootDir.Stat(srcFile); err != nil {
 		return fmt.Errorf("asset not found: %s", absSrc)
 	}
 
-	dst := filepath.Join(outputDir, copiedPhotoName)
-
-	in, err := os.Open(absSrc)
+	in, err := rootDir.Open(srcFile)
 	if err != nil {
 		return fmt.Errorf("asset not found: %s", absSrc)
 	}
@@ -41,9 +48,15 @@ func copyAsset(srcPath, outputDir string) error {
 		}
 	}(in)
 
-	out, err := os.Create(dst)
+	outRoot, err := os.OpenRoot(outputDir)
 	if err != nil {
-		return fmt.Errorf("failed to create destination file %s: %v", dst, err)
+		return fmt.Errorf("failed to open output directory %s: %v", outputDir, err)
+	}
+	defer outRoot.Close()
+
+	out, err := outRoot.Create(copiedPhotoName)
+	if err != nil {
+		return fmt.Errorf("failed to create destination file %s in %s: %v", copiedPhotoName, outputDir, err)
 	}
 	defer func(out *os.File) {
 		err := out.Close()
@@ -53,7 +66,7 @@ func copyAsset(srcPath, outputDir string) error {
 	}(out)
 
 	if _, err := io.Copy(out, in); err != nil {
-		return fmt.Errorf("failed to copy asset from %s to %s: %v", absSrc, dst, err)
+		return fmt.Errorf("failed to copy asset from %s to %s: %v", absSrc, filepath.Join(outputDir, copiedPhotoName), err)
 	}
 
 	return nil
@@ -90,7 +103,13 @@ func Render(values schemas.ThemeSchema) string {
 		}
 	}
 
-	hf, err := os.Create(filepath.Join(outputDirectory, outputFile))
+	outRoot, err := os.OpenRoot(outputDirectory)
+	if err != nil {
+		log.Fatalf("Failed to open output directory: %s", err)
+	}
+	defer outRoot.Close()
+
+	hf, err := outRoot.Create(outputFile)
 	if err != nil {
 		log.Fatalf("Failed to create file: %s", err)
 	}
@@ -111,7 +130,13 @@ func Render(values schemas.ThemeSchema) string {
 	}
 
 	// copy css file
-	src, err := os.Open(cssFile)
+	srcRoot, err := os.OpenRoot(templateDirectory)
+	if err != nil {
+		log.Fatalf("warning: could not open theme directory (%s): %v", templateDirectory, err)
+	}
+	defer srcRoot.Close()
+
+	src, err := srcRoot.Open(details.CSSFile)
 	if err != nil {
 		log.Fatalf("warning: could not open theme style.css (%s): %v", cssFile, err)
 	} else {
@@ -121,17 +146,26 @@ func Render(values schemas.ThemeSchema) string {
 				log.Fatalln(err)
 			}
 		}(src)
-		dstPath := filepath.Join(outputDirectory, details.CSSFile)
-		dst, err := os.Create(dstPath)
+		
+		dstRoot, err := os.OpenRoot(outputDirectory)
 		if err != nil {
+			log.Fatalf("warning: could not open output directory (%s): %v", outputDirectory, err)
+		}
+		defer dstRoot.Close()
+
+		dst, err := dstRoot.Create(details.CSSFile)
+		if err != nil {
+			dstPath := filepath.Join(outputDirectory, details.CSSFile)
 			log.Fatalf("warning: could not create destination css file (%s): %v", dstPath, err)
 		} else {
 			defer func() {
 				if err := dst.Close(); err != nil {
+					dstPath := filepath.Join(outputDirectory, details.CSSFile)
 					log.Fatalf("warning: could not close destination css file (%s): %v", dstPath, err)
 				}
 			}()
 			if _, err := io.Copy(dst, src); err != nil {
+				dstPath := filepath.Join(outputDirectory, details.CSSFile)
 				log.Fatalf("warning: could not copy css file (%s): %v", dstPath, err)
 			}
 		}

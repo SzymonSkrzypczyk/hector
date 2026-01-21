@@ -2,11 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"hector/internal/pipeline"
+	"io"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
+
+	"hector/internal/pipeline"
 
 	"github.com/spf13/cobra"
 )
@@ -57,14 +60,44 @@ var previewCmd = &cobra.Command{
 		}
 
 		// variables for comparing file changes
-		previousData, err := os.ReadFile(valuesPathPreview)
+		dir := filepath.Dir(valuesPathPreview)
+		base := filepath.Base(valuesPathPreview)
+
+		root, err := os.OpenRoot(dir)
+		if err != nil {
+			log.Fatalf("Error opening directory %s: %v\n", dir, err)
+		}
+		defer root.Close()
+
+		f, err := root.Open(base)
+		if err != nil {
+			log.Fatalf("Error opening file %s: %v\n", base, err)
+		}
+		defer f.Close()
+
+		previousData, err := io.ReadAll(f)
 		if err != nil {
 			log.Fatalf("Error reading data file: %v\n", err)
 		}
 
 		if watchPreview {
 			for {
-				currentData, err := os.ReadFile(valuesPathPreview)
+				dir := filepath.Dir(valuesPathPreview)
+				base := filepath.Base(valuesPathPreview)
+
+				root, err := os.OpenRoot(dir)
+				if err != nil {
+					log.Fatalf("Error opening directory %s: %v\n", dir, err)
+				}
+				defer root.Close()
+
+				f, err := root.Open(base)
+				if err != nil {
+					log.Fatalf("Error opening file %s: %v\n", base, err)
+				}
+				defer f.Close()
+
+				currentData, err := io.ReadAll(f)
 				if err != nil {
 					log.Fatalf("Error reading data file: %v\n", err)
 				}
