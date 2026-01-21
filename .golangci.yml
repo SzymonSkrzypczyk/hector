@@ -13,7 +13,6 @@ linters:
     - gosimple
     - ineffassign
     - unused
-
-linters-settings:
-  revive:
-    severity: warning
+  settings:
+    revive:
+      severity: warning
