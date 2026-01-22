@@ -25,13 +25,21 @@ func renderTemplate(theme string, outputFile string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open themes directory: %w", err)
 	}
-	defer themesRoot.Close()
+	defer func() {
+		if err := themesRoot.Close(); err != nil {
+			log.Printf("failed to close themes directory: %v", err)
+		}
+	}()
 
 	src, err := themesRoot.Open(filepath.Join(theme, "template.yaml"))
 	if err != nil {
 		return fmt.Errorf("failed to open template %q: %w", filepath.Join("themes", theme, "template.yaml"), err)
 	}
-	defer src.Close()
+	defer func() {
+		if err := src.Close(); err != nil {
+			log.Printf("failed to close template file: %v", err)
+		}
+	}()
 
 	var dst io.Writer
 	if outputFile == "" {
@@ -44,13 +52,21 @@ func renderTemplate(theme string, outputFile string) error {
 		if err != nil {
 			return fmt.Errorf("failed to open output directory %q: %w", dir, err)
 		}
-		defer outRoot.Close()
+		defer func() {
+			if err := outRoot.Close(); err != nil {
+				log.Printf("failed to close output directory: %v", err)
+			}
+		}()
 
 		file, err := outRoot.Create(base)
 		if err != nil {
 			return fmt.Errorf("failed to create output file %q: %w", outputFile, err)
 		}
-		defer file.Close()
+		defer func() {
+			if err := file.Close(); err != nil {
+				log.Printf("failed to close output file: %v", err)
+			}
+		}()
 		dst = file
 	}
 
