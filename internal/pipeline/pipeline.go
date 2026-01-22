@@ -5,7 +5,11 @@ import (
 	"hector/internal/pdf"
 	"hector/internal/render"
 	"hector/internal/schemas"
+	"hector/internal/pdf"
+	"hector/internal/render"
+	"hector/internal/schemas"
 	"hector/internal/theme"
+	hlog "hector/internal/log"
 )
 
 const (
@@ -22,9 +26,14 @@ func GenerateHTML(selectedThemeName, valuesPath string) (string, schemas.ThemeSc
 
 func Pipeline(selectedThemeName, valuesPath, outputPath string) {
 	rendered, exampleStruct := GenerateHTML(selectedThemeName, valuesPath)
+	var err error
 	if outputPath != "" {
-		pdf.GeneratePDF(rendered, exampleStruct.PDFDetails(), outputPath)
+		err = pdf.GeneratePDF(rendered, exampleStruct.PDFDetails(), outputPath)
 	} else {
-		pdf.GeneratePDF(rendered, exampleStruct.PDFDetails(), defaultOutputDirectory)
+		err = pdf.GeneratePDF(rendered, exampleStruct.PDFDetails(), defaultOutputDirectory)
+	}
+
+	if err != nil {
+		hlog.Fatal("%v", err)
 	}
 }

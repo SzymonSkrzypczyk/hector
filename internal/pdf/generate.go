@@ -29,7 +29,7 @@ func clearOutputDirectory(outputDirectory string) {
 	}
 }
 
-func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory string) {
+func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory string) error {
 	if err := os.MkdirAll(outputDirectory, 0750); err != nil {
 		log.Fatalln(err)
 	}
@@ -40,7 +40,7 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory 
 	}
 
 	if _, err := os.Stat(absHTML); os.IsNotExist(err) {
-		log.Fatalln("Error: HTML file not found at", absHTML)
+		return fmt.Errorf("HTML file not found at %s", absHTML)
 	}
 	hlog.Debug("Loading HTML from: %s\n", absHTML)
 
@@ -53,25 +53,25 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory 
 
 	url, err := l.Launch()
 	if err != nil {
-		hlog.Fatal("Failed to launch browser. This is often due to missing dependencies on the system.\nError: %v\nSee https://go-rod.github.io/#/compatibility?id=os for help.\n", err)
+		return fmt.Errorf("failed to launch browser (missing dependencies?): %w", err)
 	}
 
 	hlog.Debug("Browser launched. Connecting...\n")
 	browser := rod.New().ControlURL(url)
 	err = browser.Connect()
 	if err != nil {
-		hlog.Fatal("Failed to connect to browser: %v", err)
+		return fmt.Errorf("failed to connect to browser: %w", err)
 	}
 	defer browser.MustClose()
 
 	page, err := browser.Page(proto.TargetCreateTarget{URL: fileURL})
 	if err != nil {
-		hlog.Fatal("Failed to open page: %v", err)
+		return fmt.Errorf("failed to open page: %w", err)
 	}
 
 	err = page.WaitLoad()
 	if err != nil {
-		hlog.Fatal("Failed to load page: %v", err)
+		return fmt.Errorf("failed to load page: %w", err)
 	}
 
 	targetFile := filepath.Join(outputDirectory, "result_cv.pdf")
@@ -89,20 +89,21 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory 
 	})
 	hlog.Debug("PDF Stream generated. Reading data...\n")
 	if err != nil {
-		log.Fatalln("Failed to generate PDF command:", err)
+		return fmt.Errorf("failed to generate PDF command: %w", err)
 	}
 
 	pdfData, err := io.ReadAll(pdfStream)
 	if err != nil {
-		log.Fatalln("Failed to read PDF stream:", err)
+		return fmt.Errorf("failed to read PDF stream: %w", err)
 	}
 
 	if err := os.WriteFile(targetFile, pdfData, 0600); err != nil {
-		log.Fatalln("Failed to save PDF file:", err)
+		return fmt.Errorf("failed to save PDF file: %w", err)
 	}
 
 	clearOutputDirectory(outputDirectory)
 	hlog.Info("Success! PDF generated at: %s\n", targetFile)
+	return nil
 }
 
 func floatPtr(v float64) *float64 {

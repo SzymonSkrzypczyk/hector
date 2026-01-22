@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -33,7 +34,13 @@ func TestGeneratePDF(t *testing.T) {
 
 	outputDir := filepath.Join(tempDir, "output")
 
-	GeneratePDF(htmlPath, style, outputDir)
+	err := GeneratePDF(htmlPath, style, outputDir)
+	if err != nil {
+		if strings.Contains(err.Error(), "failed to launch browser") {
+			t.Skipf("Skipping test due to browser launch failure (likely missing dependencies): %v", err)
+		}
+		t.Fatalf("GeneratePDF failed: %v", err)
+	}
 
 	expectedPDF := filepath.Join(outputDir, "result_cv.pdf")
 	info, err := os.Stat(expectedPDF)

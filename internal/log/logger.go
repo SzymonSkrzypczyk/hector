@@ -24,6 +24,6 @@ func Debug(format string, v ...interface{}) {
 	}
 }
 
-func Fatal(v ...interface{}) {
-	logger.Fatal(v...)
+func Fatal(format string, v ...interface{}) {
+	logger.Fatalf(format, v...)
 }
