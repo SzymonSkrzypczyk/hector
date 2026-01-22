@@ -68,7 +68,7 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory 
 	if err != nil {
 		hlog.Fatal("Failed to open page: %v", err)
 	}
-	
+
 	err = page.WaitLoad()
 	if err != nil {
 		hlog.Fatal("Failed to load page: %v", err)
