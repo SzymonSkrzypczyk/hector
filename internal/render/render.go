@@ -31,7 +31,11 @@ func copyAsset(srcPath, outputDir string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open source directory %s: %v", srcDir, err)
 	}
-	defer rootDir.Close()
+	defer func() {
+		if err := rootDir.Close(); err != nil {
+			log.Printf("failed to close source directory: %v", err)
+		}
+	}()
 
 	if _, err := rootDir.Stat(srcFile); err != nil {
 		return fmt.Errorf("asset not found: %s", absSrc)
@@ -52,7 +56,11 @@ func copyAsset(srcPath, outputDir string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open output directory %s: %v", outputDir, err)
 	}
-	defer outRoot.Close()
+	defer func() {
+		if err := outRoot.Close(); err != nil {
+			log.Printf("failed to close output directory: %v", err)
+		}
+	}()
 
 	out, err := outRoot.Create(copiedPhotoName)
 	if err != nil {
@@ -107,7 +115,11 @@ func Render(values schemas.ThemeSchema) string {
 	if err != nil {
 		log.Fatalf("Failed to open output directory: %s", err)
 	}
-	defer outRoot.Close()
+	defer func() {
+		if err := outRoot.Close(); err != nil {
+			log.Printf("failed to close output directory: %v", err)
+		}
+	}()
 
 	hf, err := outRoot.Create(outputFile)
 	if err != nil {
@@ -134,7 +146,11 @@ func Render(values schemas.ThemeSchema) string {
 	if err != nil {
 		log.Fatalf("warning: could not open theme directory (%s): %v", templateDirectory, err)
 	}
-	defer srcRoot.Close()
+	defer func() {
+		if err := srcRoot.Close(); err != nil {
+			log.Printf("warning: failed to close theme directory: %v", err)
+		}
+	}()
 
 	src, err := srcRoot.Open(details.CSSFile)
 	if err != nil {
@@ -151,7 +167,11 @@ func Render(values schemas.ThemeSchema) string {
 		if err != nil {
 			log.Fatalf("warning: could not open output directory (%s): %v", outputDirectory, err)
 		}
-		defer dstRoot.Close()
+		defer func() {
+			if err := dstRoot.Close(); err != nil {
+				log.Printf("warning: failed to close output directory: %v", err)
+			}
+		}()
 
 		dst, err := dstRoot.Create(details.CSSFile)
 		if err != nil {

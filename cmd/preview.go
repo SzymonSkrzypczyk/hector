@@ -67,13 +67,21 @@ var previewCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Error opening directory %s: %v\n", dir, err)
 		}
-		defer root.Close()
+		defer func() {
+			if err := root.Close(); err != nil {
+				log.Printf("Error closing directory: %v\n", err)
+			}
+		}()
 
 		f, err := root.Open(base)
 		if err != nil {
 			log.Fatalf("Error opening file %s: %v\n", base, err)
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Printf("Error closing file: %v\n", err)
+			}
+		}()
 
 		previousData, err := io.ReadAll(f)
 		if err != nil {
@@ -82,31 +90,41 @@ var previewCmd = &cobra.Command{
 
 		if watchPreview {
 			for {
-				dir := filepath.Dir(valuesPathPreview)
-				base := filepath.Base(valuesPathPreview)
+				func() {
+					dir := filepath.Dir(valuesPathPreview)
+					base := filepath.Base(valuesPathPreview)
 
-				root, err := os.OpenRoot(dir)
-				if err != nil {
-					log.Fatalf("Error opening directory %s: %v\n", dir, err)
-				}
-				defer root.Close()
+					root, err := os.OpenRoot(dir)
+					if err != nil {
+						log.Fatalf("Error opening directory %s: %v\n", dir, err)
+					}
+					defer func() {
+						if err := root.Close(); err != nil {
+							log.Printf("Error closing directory: %v\n", err)
+						}
+					}()
 
-				f, err := root.Open(base)
-				if err != nil {
-					log.Fatalf("Error opening file %s: %v\n", base, err)
-				}
-				defer f.Close()
+					f, err := root.Open(base)
+					if err != nil {
+						log.Fatalf("Error opening file %s: %v\n", base, err)
+					}
+					defer func() {
+						if err := f.Close(); err != nil {
+							log.Printf("Error closing file: %v\n", err)
+						}
+					}()
 
-				currentData, err := io.ReadAll(f)
-				if err != nil {
-					log.Fatalf("Error reading data file: %v\n", err)
-				}
+					currentData, err := io.ReadAll(f)
+					if err != nil {
+						log.Fatalf("Error reading data file: %v\n", err)
+					}
 
-				if checkDataChanged(string(previousData), string(currentData)) {
-					log.Println("Changes detected, regenerating preview...")
-					_, _ = pipeline.GenerateHTML(selectedThemePreview, valuesPathPreview)
-					previousData = currentData
-				}
+					if checkDataChanged(string(previousData), string(currentData)) {
+						log.Println("Changes detected, regenerating preview...")
+						_, _ = pipeline.GenerateHTML(selectedThemePreview, valuesPathPreview)
+						previousData = currentData
+					}
+				}()
 			}
 		}
 	},
