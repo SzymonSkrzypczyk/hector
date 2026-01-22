@@ -4,6 +4,11 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	hlog "hector/internal/log"
+)
+
+var (
+	verbose bool
 )
 
 var rootCmd = &cobra.Command{
@@ -11,6 +16,9 @@ var rootCmd = &cobra.Command{
 	Short: "Static CV generator inspired by Hugo",
 	Long: `Hector is a static CV generator that allows users to create
 professional CVs using predefined themes and structured data files.`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		hlog.SetVerbose(verbose)
+	},
 }
 
 func Execute() {
@@ -22,4 +30,5 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose logging")
 }
