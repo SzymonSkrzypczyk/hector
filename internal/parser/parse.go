@@ -18,13 +18,21 @@ func Parse(filePath string, schema schemas.ThemeSchema) schemas.ThemeSchema {
 	if err != nil {
 		log.Fatalf("Error opening directory %s: %s", dir, err)
 	}
-	defer root.Close()
+	defer func() {
+		if err := root.Close(); err != nil {
+			log.Printf("Error closing directory: %v\n", err)
+		}
+	}()
 
 	file, err := root.Open(base)
 	if err != nil {
 		log.Fatalf("Error opening file %s: %s", base, err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Printf("Error closing file: %v\n", err)
+		}
+	}()
 
 	f, err := io.ReadAll(file)
 	if err != nil {

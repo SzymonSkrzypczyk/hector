@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// for now predefined and hardcoded 
+// for now predefined and hardcoded
 const (
 	version = "0.0.1"
 )
