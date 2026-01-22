@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	hlog "hector/internal/log"
+
 	"gopkg.in/yaml.v3"
 	"hector/internal/schemas"
 )
@@ -13,6 +15,8 @@ import (
 func Parse(filePath string, schema schemas.ThemeSchema) schemas.ThemeSchema {
 	dir := filepath.Dir(filePath)
 	base := filepath.Base(filePath)
+
+	hlog.Debug("Parsing data from: %s\n", filePath)
 
 	root, err := os.OpenRoot(dir)
 	if err != nil {
@@ -37,7 +41,7 @@ func Parse(filePath string, schema schemas.ThemeSchema) schemas.ThemeSchema {
 		log.Fatalf("Error parsing YAML: %s", err)
 	}
 
-	log.Printf("Unmarshaled %v schema\n", schema.ThemeName())
+	hlog.Info("Unmarshaled %v schema\n", schema.ThemeName())
 
 	return schema
 }

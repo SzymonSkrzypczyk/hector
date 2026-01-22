@@ -2,6 +2,7 @@ package render
 
 import (
 	"fmt"
+	hlog "hector/internal/log"
 	"hector/internal/schemas"
 	"html/template"
 	"io"
@@ -26,6 +27,8 @@ func copyAsset(srcPath, outputDir string) error {
 
 	srcDir := filepath.Dir(absSrc)
 	srcFile := filepath.Base(absSrc)
+
+	hlog.Debug("Copying asset: %s to %s\n", srcFile, outputDir)
 
 	rootDir, err := os.OpenRoot(srcDir)
 	if err != nil {
@@ -90,7 +93,7 @@ func GetPhotoFromTheme(exampleStruct schemas.ThemeSchema) string {
 func Render(values schemas.ThemeSchema) string {
 	details := values.TemplateDetails()
 	templateDirectory := filepath.Join(themePath, details.ThemeDirectory)
-	fmt.Println(templateDirectory)
+	hlog.Debug("Template directory: %s\n", templateDirectory)
 
 	htmlFile := filepath.Join(templateDirectory, details.HTMLTemplate)
 	cssFile := filepath.Join(templateDirectory, details.CSSFile)
@@ -136,6 +139,7 @@ func Render(values schemas.ThemeSchema) string {
 	}
 	defer srcRoot.Close()
 
+	hlog.Debug("Copying CSS file: %s from %s\n", details.CSSFile, templateDirectory)
 	src, err := srcRoot.Open(details.CSSFile)
 	if err != nil {
 		log.Fatalf("warning: could not open theme style.css (%s): %v", cssFile, err)
@@ -179,7 +183,7 @@ func Render(values schemas.ThemeSchema) string {
 		}
 	}
 
-	log.Println("HTML resume generated at:", filepath.Join(outputDirectory, outputFile))
+	hlog.Info("HTML resume generated at: %s\n", filepath.Join(outputDirectory, outputFile))
 
 	return filepath.Join(outputDirectory, outputFile)
 }

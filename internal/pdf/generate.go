@@ -1,7 +1,7 @@
 package pdf
 
 import (
-	"fmt"
+	hlog "hector/internal/log"
 	"hector/internal/schemas"
 	"io"
 	"log"
@@ -42,23 +42,40 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory 
 	if _, err := os.Stat(absHTML); os.IsNotExist(err) {
 		log.Fatalln("Error: HTML file not found at", absHTML)
 	}
-	fmt.Println("Loading HTML from:", absHTML)
+	hlog.Debug("Loading HTML from: %s\n", absHTML)
 
 	fileURL := "file:///" + filepath.ToSlash(absHTML)
 
 	l := launcher.New().
 		Headless(true).
 		Set("disable-gpu", "true").
-		Set("no-sandbox", "true").
-		MustLaunch()
+		Set("no-sandbox", "true")
 
-	browser := rod.New().ControlURL(l).MustConnect()
+	url, err := l.Launch()
+	if err != nil {
+		hlog.Fatal("Failed to launch browser. This is often due to missing dependencies on the system.\nError: %v\nSee https://go-rod.github.io/#/compatibility?id=os for help.\n", err)
+	}
+
+	hlog.Debug("Browser launched. Connecting...\n")
+	browser := rod.New().ControlURL(url)
+	err = browser.Connect()
+	if err != nil {
+		hlog.Fatal("Failed to connect to browser: %v", err)
+	}
 	defer browser.MustClose()
 
-	page := browser.MustPage(fileURL).MustWaitLoad()
+	page, err := browser.Page(proto.TargetCreateTarget{URL: fileURL})
+	if err != nil {
+		hlog.Fatal("Failed to open page: %v", err)
+	}
+	
+	err = page.WaitLoad()
+	if err != nil {
+		hlog.Fatal("Failed to load page: %v", err)
+	}
 
 	targetFile := filepath.Join(outputDirectory, "result_cv.pdf")
-	fmt.Println("Page loaded. Generating PDF...")
+	hlog.Info("Page loaded. Generating PDF...\n")
 
 	pdfStream, err := page.PDF(&proto.PagePrintToPDF{
 		PrintBackground: true,
@@ -70,6 +87,7 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory 
 		MarginRight:     floatPtr(styleGuide.MarginRight),
 		Scale:           floatPtr(styleGuide.Scale),
 	})
+	hlog.Debug("PDF Stream generated. Reading data...\n")
 	if err != nil {
 		log.Fatalln("Failed to generate PDF command:", err)
 	}
@@ -84,7 +102,7 @@ func GeneratePDF(htmlPath string, styleGuide schemas.PDFSchema, outputDirectory 
 	}
 
 	clearOutputDirectory(outputDirectory)
-	fmt.Println("Success! PDF generated at:", targetFile)
+	hlog.Info("Success! PDF generated at: %s\n", targetFile)
 }
 
 func floatPtr(v float64) *float64 {
