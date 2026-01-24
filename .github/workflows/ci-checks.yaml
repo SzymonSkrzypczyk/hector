@@ -4,6 +4,11 @@ on:
   pull_request:
     branches:
       - "**"
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
 
 jobs:
   build:
@@ -11,6 +16,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+    # Conditional execution based on OS and events
+    if: |
+      matrix.os == 'ubuntu-latest' ||
+      (matrix.os == 'windows-latest' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))) ||
+      (matrix.os == 'macos-latest' && startsWith(github.ref, 'refs/tags/v'))
 
     steps:
       - name: Checkout Source
