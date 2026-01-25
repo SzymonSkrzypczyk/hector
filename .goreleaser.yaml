@@ -16,7 +16,8 @@ builds:
       - arm64
 
 archives:
-  - format: tar.gz
+  - formats:
+      - tar.gz
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -24,10 +25,10 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
 
 checksum:
   name_template: 'checksums.txt'
@@ -61,16 +62,16 @@ brews:
 chocolateys:
   - name: hector
     title: Hector
-    description: "Hector is a static CV generator that allows users to create professional CVs using predefined themes and structured data files."  
+    description: "Hector is a static CV generator that allows users to create professional CVs using predefined themes and structured data files."
     authors: Szymon Skrzypczyk
     project_url: https://github.com/SzymonSkrzypczyk/hector
     url_template: "https://github.com/SzymonSkrzypczyk/hector/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-    copyright: 2026
+    copyright: "2026"
     license_url: https://github.com/SzymonSkrzypczyk/hector/blob/main/LICENSE
     project_source_url: https://github.com/SzymonSkrzypczyk/hector
     docs_url: https://github.com/SzymonSkrzypczyk/hector/blob/main/docs/USER_GUIDE.md
     bug_tracker_url: https://github.com/SzymonSkrzypczyk/hector/issues
-    release_notes: "https://github.com/SzymonSkrzypczyk/hector/releases/tag/v{{ .Version }}"
+    release_notes: "https://github.com/SzymonSkrzypczyk/hector/releases/tag/{{ .Tag }}"
     api_key: "{{ .Env.CHOCOLATEY_API_KEY }}"
     source_repo: "https://push.chocolatey.org/"
     skip_publish: false
