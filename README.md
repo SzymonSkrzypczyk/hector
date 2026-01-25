@@ -1,4 +1,10 @@
 # Hector
+
+![CI](https://github.com/SzymonSkrzypczyk/hector/actions/workflows/ci-checks.yaml/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/SzymonSkrzypczyk/hector)](https://goreportcard.com/report/github.com/SzymonSkrzypczyk/hector)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub release](https://img.shields.io/github/release/SzymonSkrzypczyk/hector.svg)](https://github.com/SzymonSkrzypczyk/hector/releases)
+
 A static cv generator for developers who are tired of changing their only CV created in existance.
 
 ![logo](docs/assets/logo_transparent.png)
@@ -11,13 +17,12 @@ A static cv generator for developers who are tired of changing their only CV cre
 - Open-source and free to use.
 
 ## Installation
-To install Hector, clone the repository and navigate to the project directory:
+
+To install Hector, clone the repository and build the project:
+
 ```bash
 git clone git@github.com:SzymonSkrzypczyk/hector.git
 cd hector
-```
-Build go project
-```bash
 go build
 ```
 
@@ -27,20 +32,39 @@ Then run:
 ```bash
 task build
 ```
-To run tests:
+
+For more detailed installation instructions, including troubleshooting, please refer to the [User Guide](docs/USER_GUIDE.md).
+
+## Usage
+
+### Quick Start
+Once built, you can generate a CV immediately using the provided examples.
+
 ```bash
-task test
-```
-To clean up:
-```bash
-task clean
+# Generating a PDF using the 'normal' theme
+./hector generate --theme normal --data examples/normal_example.yaml --output-dir .
 ```
 
-
-## Get help
 To see the available commands and options, run:
 ```bash
 ./hector --help
+```
+
+For a comprehensive guide on all commands, check the [User Guide](docs/USER_GUIDE.md).
+
+## Configuration
+Hector uses a YAML file to store your resume data. You can find example configurations in the [`examples/`](examples/) directory.
+
+Key sections in the configuration:
+- `candidate_info`: Personal details and summary.
+- `contact`: Email, phone, and links.
+- `experience`: Work history.
+- `education`: Academic background.
+- `skills`: Technical keywords.
+
+To validate your configuration file:
+```bash
+./hector validate --data your_cv_data.yaml
 ```
 
 ## Structure
@@ -48,16 +72,14 @@ The project is structured as follows:
 - 📁 [`cmd/`](cmd/): Contains the main application code and command-line interface.
 - 📁 [`themes/`](themes/): Contains predefined CV templates.
 - 📁 [`examples/`](examples/): Example CV data files.
-- 📁 [`internal/parser`](internal/parser/): Package for parsing CV data files.
-- 📁 [`internal/pdf`](internal/pdf/): Package for PDF generation utilities.
-- 📁 [`internal/pipeline`](internal/pipeline/): Package for managing generation pipelines.
-- 📁 [`internal/render`](internal/render/): Package for rendering CVs using templates.
-- 📁 [`internal/schemas`](internal/schemas/): Package for defining CV data schemas.
-- 📁 [`internal/theme`](internal/theme/): Package for managing CV themes.
+- 📁 [`internal/`](internal/): Core application logic (parser, pdf, pipeline, etc.).
 - 📝 [`main.go`](main.go): The entry point of the application.
 
 ## Documents
-- [`CHANGELOG.md`](docs/CHANGELOG.md): Changelog of the project.
-- [`CODE_OF_CONDUCT.md`](docs/CODE_OF_CONDUCT.md): Code of conduct for the project.
-- [`USER_GUIDE.md`](docs/USER_GUIDE.md): User guide for the project.
-- [`CONTRIBUTING.md`](docs/CONTRIBUTING.md): Contributing guide for the project.
+- [`USER_GUIDE.md`](docs/USER_GUIDE.md): Detailed usage and installation guide.
+- [`CONTRIBUTING.md`](docs/CONTRIBUTING.md): Guide for contributors.
+- [`CHANGELOG.md`](docs/CHANGELOG.md): History of changes.
+- [`CODE_OF_CONDUCT.md`](docs/CODE_OF_CONDUCT.md): Code of conduct.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
